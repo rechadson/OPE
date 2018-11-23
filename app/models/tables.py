@@ -88,4 +88,4 @@ class Usuario(db.Model):
         
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<User %r>' % self.User

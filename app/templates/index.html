@@ -7,7 +7,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../../../favicon.ico">
 
-    <title>Signin Template for Bootstrap</title>
+    <title>Login</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -16,14 +16,17 @@
     <link href="{{url_for('static', filename="signin.css")}}" rel="stylesheet">
   </head>
 
-  <body class="text-center" action = "" method = "POST">
-    <form class="form-signin">
+  <body class="text-center" >
+    
+      
+    <form class="form-signin" action = "/" method = "POST">
+      {{ LoginForm.csrf_token }}
       <img class="mb-4" src="../../assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-      <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+      <h1 class="h3 mb-3 font-weight-normal">RMJS Vidros</h1>
       <label for="User" class="sr-only">Usuario</label>
-      <input id="User" class="form-control" placeholder="Usuario" required autofocus>
+      {{LoginForm.username(class="form-control", placeholder="Usuario") }}
       <label for="inputPassword" class="sr-only">Password</label>
-      <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+      {{LoginForm.password(id="inputPassword", class="form-control", placeholder="Password")}}
       <div class="checkbox mb-3">
         <label>
           <input type="checkbox" value="remember-me"> Remember me
