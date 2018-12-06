@@ -9,13 +9,19 @@ from app.models import forms, tables
 def index(user,inputPassword):
     
     form = forms.LoginForm()
-    if form.validate_on_submit():
+    if form.validate_on_submit(): 
+        print(form.username.data)
+        formLogin  = str(form.username.data)
+        formSenha = str(form.password.data)
+        
+        try:
+            login = tables.Usuario.getUser(formLogin)
+            senha = tables.Usuario.getSenha(formSenha)
+        except errors as errors:
+            return print("erro")       
+        print (login,senha)
         
         
-        user = [tables.Usuario.query.filter_by(User = form.username.data).all()]
-        All = tables.Usuario.query.all()
-        print(user)
-        print (All)
         
 
        

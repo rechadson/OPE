@@ -86,6 +86,16 @@ class Usuario(db.Model):
         self.User = User
         self.Senha = Senha
         
+    def getUser(User):
+        user = Usuario.query.filter_by(User = User).all()
+        for p in user:
+            u = p.User
+        return u
 
-    def __repr__(self):
-        return '<User %r>' % self.User
+    def getSenha(Senha):
+        senha = Usuario.query.filter_by(Senha = Senha).all()
+        for p in senha:
+            s = p.Senha
+        return s
+
+    

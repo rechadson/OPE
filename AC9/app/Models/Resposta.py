@@ -1,1 +1,0 @@
-resposta = {"Status":"", "Dados":{}, "Mensagem":""}
