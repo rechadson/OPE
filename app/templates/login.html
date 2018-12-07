@@ -27,6 +27,13 @@
       {{LoginForm.username(class="form-control", placeholder="Usuario") }}
       <label for="inputPassword" class="sr-only">Password</label>
       {{LoginForm.password(id="inputPassword", class="form-control", placeholder="Password")}}
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            <p class="alert alert-danger">{{ message }}</p>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
       <div class="checkbox mb-3">
         <label>
           <input type="checkbox" value="remember-me"> Remember me

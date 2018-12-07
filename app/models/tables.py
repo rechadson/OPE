@@ -88,14 +88,12 @@ class Usuario(db.Model):
         
     def getUser(User):
         user = Usuario.query.filter_by(User = User).all()
-        for p in user:
-            u = p.User
-        return u
+        
+        return user
 
     def getSenha(Senha):
         senha = Usuario.query.filter_by(Senha = Senha).all()
-        for p in senha:
-            s = p.Senha
-        return s
+        
+        return senha
 
     

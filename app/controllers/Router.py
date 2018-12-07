@@ -1,12 +1,12 @@
 from app import app,db
-from flask import render_template
+from flask import render_template, redirect, url_for, flash
 from app.models import forms, tables
 
 
 
 @app.route("/<user><inputPassword>", methods=["POST"])
 @app.route("/", methods=["GET","POST"],defaults={"user":None,"inputPassword":None})
-def index(user,inputPassword):
+def login(user,inputPassword):
     
     form = forms.LoginForm()
     if form.validate_on_submit(): 
@@ -14,18 +14,16 @@ def index(user,inputPassword):
         formLogin  = str(form.username.data)
         formSenha = str(form.password.data)
         
-        try:
-            login = tables.Usuario.getUser(formLogin)
-            senha = tables.Usuario.getSenha(formSenha)
-        except errors as errors:
-            return print("erro")       
-        print (login,senha)
+        login = tables.Usuario.getUser(formLogin)
+        senha = tables.Usuario.getSenha(formSenha)
+        if login:
+            if senha:
+                return redirect(url_for('index'))
+            else:
+                flash('Senha Inválida!')
+                return redirect(url_for('login'))
+        else:
+            flash('Usuario inválido ou não existe!')
+            return redirect(url_for('login'))
         
-        
-        
-
-       
-    else:
-        print(form.errors)
-    
-    return render_template('index.html',LoginForm=form)
+    return render_template('login.html',LoginForm=form)
