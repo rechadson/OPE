@@ -6,7 +6,7 @@ from app.models import forms, tables
 
 
 @app.route("/<user><inputPassword>", methods=["POST"])
-@app.route("/", methods=["GET","POST"],defaults={"user":None,"inputPassword":None})
+@app.route("/login", methods=["GET","POST"],defaults={"user":None,"inputPassword":None})
 def login(user,inputPassword):
     
     form = forms.LoginForm()
@@ -28,3 +28,8 @@ def login(user,inputPassword):
             return redirect(url_for('login'))
         
     return render_template('login.html',LoginForm=form)
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+        
+    return render_template('index.html')
