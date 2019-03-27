@@ -1,12 +1,12 @@
 # coding=utf-8
 from app import app,db
-from flask import render_template, redirect, url_for, flash
+from flask import render_template, redirect, url_for, flash,session
 from app.models import forms, tables
 
 
 
 @app.route("/<user><inputPassword>", methods=["POST"])
-@app.route("/login", methods=["GET","POST"],defaults={"user":None,"inputPassword":None})
+@app.route("/", methods=["GET","POST"],defaults={"user":None,"inputPassword":None})
 def login(user,inputPassword):
     
     form = forms.LoginForm()
@@ -19,7 +19,8 @@ def login(user,inputPassword):
         senha = tables.Usuario.getSenha(formSenha)
         if login:
             if senha:
-                return redirect(url_for('index'))
+                session['Login'] = "valid"
+                return redirect(url_for('index',login))
             else:
                 flash('Senha Inválida!')
                 return redirect(url_for('login'))
@@ -29,7 +30,12 @@ def login(user,inputPassword):
         
     return render_template('login.html',LoginForm=form)
 
-@app.route("/", methods=["GET", "POST"])
-def index():
-        
-    return render_template('index.html')
+@app.route("/home/<user>", methods=["GET", "POST"])
+def index(user):
+    valid = tables.Usuario.getUser(user)
+    if valid:
+        return render_template('index.html')
+    else:
+        return redirect(url_for('login'))
+    
+    
