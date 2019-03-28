@@ -20,7 +20,8 @@ def login(user,inputPassword):
         if login:
             if senha:
                 session['Login'] = "valid"
-                return redirect(url_for('index',login))
+                print(formLogin)
+                return redirect(url_for('index',user=formLogin))
             else:
                 flash('Senha Inválida!')
                 return redirect(url_for('login'))
@@ -37,5 +38,11 @@ def index(user):
         return render_template('index.html')
     else:
         return redirect(url_for('login'))
-    
+    click = document.getElementById('orc')
+    print(click)
+@app.route("/orcamento", methods=["GET", "POST"])
+def Orcamento():
+    produtos = tables.Produtos.getAllProduto()
+    print(produtos)
+    return render_template('orcamento.html') 
     

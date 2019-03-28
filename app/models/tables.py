@@ -2,22 +2,29 @@ from app import db
 from datetime import datetime
 
 class Produtos(db.Model):
-    __tablename__ = "produtos"
+    __tablename__ = "Produtos"
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(80), nullable=False)
     preco = db.Column(db.Float(120), nullable=False)
-    fornecedor_id = db.Column(db.Integer,db.ForeignKey('fornecedores.id'))
+    fornecedor_id = db.Column(db.Integer,db.ForeignKey('Fornecedor.id'))
     fornecedor = db.relationship('Fornecedor',foreign_keys=fornecedor_id)
     def __init__(self,nome,preco,fornecedor_id):
         self.nome = nome
         self.preco = preco
         self.fornecedor_id = fornecedor_id
+    def getProduto(id):
+        produto = Produtos.query.filter_by(id = id).all()
+        return produto
+
+    def getAllProduto():
+        produto = Produtos.query.all()
+        return produto
 
     def __repr__(self):
         return '<User %r>' % self.nome
 
 class Clinte(db.Model):
-    __tablename__ = "clientes"
+    __tablename__ = "Clinte"
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(80), nullable=False)
     CPF = db.Column(db.String(80),unique=True, nullable=False)
@@ -33,13 +40,13 @@ class Clinte(db.Model):
         return '<Clinte %r>' % self.nome
 
 class Orcamento(db.Model):
-    __tablename__ = "orcamentos"
+    __tablename__ = "Orcamento"
     id = db.Column(db.Integer, primary_key=True)
     preco = db.Column(db.Float(120), nullable=False)
     data = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    produto_id = db.Column(db.Integer,db.ForeignKey('produtos.id'))
+    produto_id = db.Column(db.Integer,db.ForeignKey('Produtos.id'))
     produto = db.relationship('Produtos',foreign_keys=produto_id)
-    cliente_cpf = db.Column(db.Integer,db.ForeignKey('clientes.CPF'))
+    cliente_cpf = db.Column(db.Integer,db.ForeignKey('Clinte.CPF'))
     cliente = db.relationship('Clinte',foreign_keys=cliente_cpf)
 
     def __init__(self,produto_id,cliente_cpf,preco,data):
@@ -52,9 +59,9 @@ class Orcamento(db.Model):
         return '<Orcamento %r>' % self.id
 
 class Pedido(db.Model):
-    __tablename__ = "pedidos"
+    __tablename__ = "Pedido"
     id = db.Column(db.Integer, primary_key=True)
-    orcamento_id = db.Column(db.Integer,db.ForeignKey('orcamentos.id'))
+    orcamento_id = db.Column(db.Integer,db.ForeignKey('Orcamento.id'))
     orcamento = db.relationship('Orcamento',foreign_keys=orcamento_id)
 
     def __init__(self,orcamento_id):        
@@ -64,7 +71,7 @@ class Pedido(db.Model):
         return '<User %r>' % self.username
 
 class Fornecedor(db.Model):
-    __tablename__ = "fornecedores"
+    __tablename__ = "Fornecedor"
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -73,7 +80,7 @@ class Fornecedor(db.Model):
         self.nome = nome
         self.email = email
         
-
+    
     def __repr__(self):
         return '<User %r>' % self.username
 class Usuario(db.Model):

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField
+from wtforms import *
 from wtforms.validators import DataRequired
 
 class LoginForm(FlaskForm):
@@ -12,6 +12,10 @@ class Cliente(FlaskForm):
     endereco = StringField("endereco",validators=[DataRequired()])
 
 class Produto(FlaskForm):
-    codigo = StringField("nome",validators=[DataRequired()])
-    Nome = StringField("cpf",validators=[DataRequired()])
-    Preco = StringField("endereco",validators=[DataRequired()])
+    codigo = StringField("codigo",validators=[DataRequired()])
+    Nome = StringField("Nome",validators=[DataRequired()])
+    preco = StringField("preco",validators=[DataRequired()])
+class Orcamento(FlaskForm):
+    codigo_Produto = StringField("codigo_Produto",validators=[DataRequired()])
+    cpf_cliente = StringField("cpf_cliente",validators=[DataRequired()])
+    Quantidade = IntegerField("Quantidade",validators=[DataRequired()])
