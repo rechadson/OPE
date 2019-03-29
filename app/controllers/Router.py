@@ -38,11 +38,8 @@ def index(user):
         return render_template('index.html')
     else:
         return redirect(url_for('login'))
-    click = document.getElementById('orc')
-    print(click)
-@app.route("/orcamento", methods=["GET", "POST"])
+@app.route("/orcamento/", methods=["GET","POST"])
 def Orcamento():
-    produtos = tables.Produtos.getAllProduto()
-    print(produtos)
-    return render_template('orcamento.html') 
+    
+    return render_template('Orcamento.html',produtos = tables.Produtos.getAllProduto()) 
     
