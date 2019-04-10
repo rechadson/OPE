@@ -28,7 +28,7 @@
   </form>
   
   {%else%}
-  <div class="form-group">
+      <div class="form-group">
         <label for="exampleFormControlSelect1">Fornecedor</label>
         <select class="form-control" id="exampleFormControlSelect1">
           {% for fornecedor in fornecedores %}
@@ -36,10 +36,17 @@
           {% endfor %}
           </select>
       </div>
+      <div class="form-group"> 
+        <label for="CNPJ">CNPJ</label>
+        {{FornecedorForm.cnpj(id="CNPJ",class="form-control", placeholder="CNPJ da empresa")}}
+    </div>
+    <div class="form-group">
+        <label for="Email1">Endereço de email</label>
+        {{ FornecedorForm.email(type="email",class="form-control", id="Email1", placeholder="Seu email") }}
+    </div>
+      
       {% endif %}
 
-    <script>
-            document.getElementById("myImage").src = "landscape.jpg";
-    </script>
+    
             
 {% endblock %}
