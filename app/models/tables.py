@@ -84,11 +84,10 @@ class Fornecedor(db.Model):
 
     def getAllFornecedor():
         fornecedor = Fornecedor.query.all()
-        print(fornecedor)
         return fornecedor
-
     def getFornecedor(cnpj):
-        fornecedor = Fornecedor.query.filter_by(cnpj = cnpj).first()
+        fornecedor = Fornecedor.query.filter_by(cnpj = cnpj).all()
+        print(fornecedor) 
         return fornecedor
     
     def insertFornecedor(nome,email,cnpj):
@@ -100,8 +99,7 @@ class Fornecedor(db.Model):
         fornecedor.nome = nome
         fornecedor.email = email
         db.session.commit()
-    def __repr__(self):
-        return '<User %r>' % self.nome
+    
 class Usuario(db.Model):
     __tablename__ = "Usuario"
     id = db.Column(db.Integer, primary_key=True)

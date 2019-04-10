@@ -1,6 +1,7 @@
 {% extends "baseNavbar.html" %}
 {% block content %}
-<form action = "/fornecedor/cadastrar/" method = "POST">
+
+<form action = {% if cadastrar %} "/fornecedor/cadastrar/"{%else%} "/fornecedor/"{%endif%} method = "POST">
     {% if cadastrar %}    
     <div class="form-group">
         {{ FornecedorForm.csrf_token }} 
@@ -21,32 +22,52 @@
         {% for message in messages %}
           <p class="alert alert-danger">{{ message }}</p>
         {% endfor %}
-      {% endif %}
-    {% endwith %}
-   
-    <button type="submit" class="btn btn-primary">Enviar</button>
-  </form>
+        {% endif %}
+      {% endwith %}
+     <button type="submit" class="btn btn-primary">Enviar</button>
+  
   
   {%else%}
-      <div class="form-group">
-        <label for="exampleFormControlSelect1">Fornecedor</label>
-        <select class="form-control" id="exampleFormControlSelect1">
-          {% for fornecedor in fornecedores %}
-            <option>{{ fornecedor.nome }}</option>
-          {% endfor %}
-          </select>
-      </div>
-      <div class="form-group"> 
-        <label for="CNPJ">CNPJ</label>
-        {{FornecedorForm.cnpj(id="CNPJ",class="form-control", placeholder="CNPJ da empresa")}}
+  {% if pesquisa %} 
+  <div class="form-group">
+    {%for fon in fornecedores%}
+
+    <div class="form-group">
+      <label for="cnpj">CNPJ:</label>
+      <input type="email" class="form-control" id="cnpj" value="{{fon.cnpj}}">
+      
     </div>
     <div class="form-group">
-        <label for="Email1">Endereço de email</label>
-        {{ FornecedorForm.email(type="email",class="form-control", id="Email1", placeholder="Seu email") }}
-    </div>
+      <label for="nome">Nome do fornecedor:</label>
+      <input type="email" class="form-control" id="nome" value="{{fon.nome}}">
       
-      {% endif %}
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" class="form-control" id="email" value="{{fon.email}}">
+      
+    </div>
+    {%endfor%}
+    {%else%}
+    <div class="form-group">
+      {{ FornecedorForm.csrf_token }} 
+      <label for="CNPJ">CNPJ</label>
+      {{FornecedorForm.cnpj(id="CNPJ",class="form-control", placeholder="CNPJ da empresa")}}
+      </div>
+      <div class="form-group">
+      <label for="nome">Nome do fornecedor</label>
+      {{ FornecedorForm.fornecedor(class="form-control", id="nome", placeholder="fornecedor",value="nome")}}
+      </div>
+  
+      <div class="form-group">
+      <label for="Email1">Endereço de email</label>
+      {{ FornecedorForm.email(type="email",class="form-control", id="Email1", placeholder="Seu email",value="email@email") }}
+     
+      {%endif%}
+    <button type="submit" class="btn btn-primary">Pesquisar</button>
 
-    
+{% endif %}
+
+</form>
             
 {% endblock %}

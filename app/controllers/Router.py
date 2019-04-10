@@ -58,4 +58,9 @@ def Cadastrar_fornecedor():
 @app.route("/fornecedor/", methods=["GET","POST"])
 def Pesquisar_fornecedor():
     form = forms.FornecedorForm()
-    return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,fornecedores=tables.Fornecedor.getAllFornecedor())
+    
+    if form.validate_on_submit():
+        formCnpj = int(form.cnpj.data)
+        return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,pesquisa=True,fornecedores=tables.Fornecedor.getFornecedor(formCnpj))
+    print("router")   
+    return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,fornecedores=[])
