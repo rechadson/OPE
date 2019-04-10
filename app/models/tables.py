@@ -75,14 +75,33 @@ class Fornecedor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    cnpj = db.Column(db.Integer,unique=True, nullable=False)
 
-    def __init__(self,nome,email,telefone):
+    def __init__(self,nome,email,cnpj):
         self.nome = nome
         self.email = email
-        
+        self.cnpj = cnpj
+
+    def getAllFornecedor():
+        fornecedor = Fornecedor.query.all()
+        print(fornecedor)
+        return fornecedor
+
+    def getFornecedor(cnpj):
+        fornecedor = Fornecedor.query.filter_by(cnpj = cnpj).first()
+        return fornecedor
     
+    def insertFornecedor(nome,email,cnpj):
+        inserir = Fornecedor(nome,email,cnpj)
+        db.session.add(inserir)
+        db.session.commit()
+    def setFornecedor(nome,email,cnpj):
+        fornecedor = Fornecedor.query.filter_by(cnpj = cnpj).first()
+        fornecedor.nome = nome
+        fornecedor.email = email
+        db.session.commit()
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<User %r>' % self.nome
 class Usuario(db.Model):
     __tablename__ = "Usuario"
     id = db.Column(db.Integer, primary_key=True)
@@ -94,12 +113,12 @@ class Usuario(db.Model):
         self.Senha = Senha
         
     def getUser(User):
-        user = Usuario.query.filter_by(User = User).all()
+        user = Usuario.query.filter_by(User = User).first()
         
         return user
 
     def getSenha(Senha):
-        senha = Usuario.query.filter_by(Senha = Senha).all()
+        senha = Usuario.query.filter_by(Senha = Senha).first()
         
         return senha
 

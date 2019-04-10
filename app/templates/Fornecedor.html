@@ -1,0 +1,38 @@
+{% extends "baseNavbar.html" %}
+{% block content %}
+<form>
+    {% if cadastrar %}    
+    <div class="form-group">
+        {{ FornecedorForm.csrf_token }} 
+        <label for="CNPJ">CNPJ</label>
+        {{FornecedorForm.cnpj(id="CNPJ",class="form-control", placeholder="CNPJ da empresa")}}
+    </div>
+    <div class="form-group">
+        <label for="nome">Nome do fornecedor</label>
+        {{ FornecedorForm.fornecedor(class="form-control", id="nome", placeholder="fornecedor") }}
+        </div>
+
+    <div class="form-group">
+        <label for="Email1">Endereço de email</label>
+        {{ FornecedorForm.email(type="email",class="form-control", id="Email1", placeholder="Seu email") }}
+    </div>
+   
+    <button type="submit" class="btn btn-primary">Enviar</button>
+  </form>
+  
+  {%else%}
+  <div class="form-group">
+        <label for="exampleFormControlSelect1">Fornecedor</label>
+        <select class="form-control" id="exampleFormControlSelect1">
+          {% for fornecedor in fornecedores %}
+            <option>{{ fornecedor.nome }}</option>
+          {% endfor %}
+          </select>
+      </div>
+      {% endif %}
+
+    <script>
+            document.getElementById("myImage").src = "landscape.jpg";
+    </script>
+            
+{% endblock %}

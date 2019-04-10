@@ -42,4 +42,12 @@ def index(user):
 def Orcamento():
     
     return render_template('Orcamento.html',produtos = tables.Produtos.getAllProduto()) 
-    
+
+@app.route("/fornecedor/cadastrar/", methods=["GET","POST"])
+def Cadastrar_fornecedor():
+    form = forms.FornecedorForm()
+    return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=True) 
+@app.route("/fornecedor/", methods=["GET","POST"])
+def Pesquisar_fornecedor():
+    form = forms.FornecedorForm()
+    return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,fornecedores=tables.Fornecedor.getAllFornecedor())
