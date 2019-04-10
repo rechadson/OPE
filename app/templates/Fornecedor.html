@@ -1,6 +1,6 @@
 {% extends "baseNavbar.html" %}
 {% block content %}
-<form>
+<form action = "/fornecedor/cadastrar/" method = "POST">
     {% if cadastrar %}    
     <div class="form-group">
         {{ FornecedorForm.csrf_token }} 
@@ -16,6 +16,13 @@
         <label for="Email1">Endereço de email</label>
         {{ FornecedorForm.email(type="email",class="form-control", id="Email1", placeholder="Seu email") }}
     </div>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <p class="alert alert-danger">{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
    
     <button type="submit" class="btn btn-primary">Enviar</button>
   </form>

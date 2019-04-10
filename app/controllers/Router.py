@@ -46,6 +46,14 @@ def Orcamento():
 @app.route("/fornecedor/cadastrar/", methods=["GET","POST"])
 def Cadastrar_fornecedor():
     form = forms.FornecedorForm()
+    if form.validate_on_submit():
+        formNome= str(form.fornecedor.data)
+        formEmail = str(form.email.data)
+        formCnpj = int(form.cnpj.data)
+        tables.Fornecedor.insertFornecedor(formNome,formEmail,formCnpj)
+        return redirect(url_for('Cadastrar_fornecedor'))
+        
+        
     return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=True) 
 @app.route("/fornecedor/", methods=["GET","POST"])
 def Pesquisar_fornecedor():
