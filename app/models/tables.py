@@ -44,19 +44,24 @@ class Orcamento(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     preco = db.Column(db.Float(120), nullable=False)
     data = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    produto_id = db.Column(db.Integer,db.ForeignKey('Produtos.id'))
-    produto = db.relationship('Produtos',foreign_keys=produto_id)
     cliente_cpf = db.Column(db.Integer,db.ForeignKey('Clinte.CPF'))
     cliente = db.relationship('Clinte',foreign_keys=cliente_cpf)
 
-    def __init__(self,produto_id,cliente_cpf,preco,data):
+    def __init__(self,cliente_cpf,preco,data):
         self.preco = preco
         self.data = data
-        self.produto_id = produto_id
         self.cliente_cpf = cliente_cpf
 
-    def __repr__(self):
-        return '<Orcamento %r>' % self.id
+class Orcamento_Produto(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    orcamento_id = db.Column(db.Integer,db.ForeignKey('Orcamento.id'))
+    orcamento = db.relationship('Orcamento',foreign_keys=orcamento_id)
+    Produto_id = db.Column(db.Integer,db.ForeignKey('Produtos.id'))
+    produto = db.relationship('Produtos',foreign_keys=Produto_id)
+    
+    def __init__(self,orcamento_id,Produto_id):        
+        self.orcamento_id = orcamento_id
+        self.Produto_id = Produto_id
 
 class Pedido(db.Model):
     __tablename__ = "Pedido"
@@ -84,24 +89,22 @@ class Fornecedor(db.Model):
 
     def getAllFornecedor():
         fornecedor = Fornecedor.query.all()
-        print(fornecedor)
         return fornecedor
-
     def getFornecedor(cnpj):
-        fornecedor = Fornecedor.query.filter_by(cnpj = cnpj).first()
+        fornecedor = Fornecedor.query.filter_by(cnpj = cnpj).all()
         return fornecedor
     
     def insertFornecedor(nome,email,cnpj):
         inserir = Fornecedor(nome,email,cnpj)
         db.session.add(inserir)
         db.session.commit()
+        
     def setFornecedor(nome,email,cnpj):
         fornecedor = Fornecedor.query.filter_by(cnpj = cnpj).first()
         fornecedor.nome = nome
         fornecedor.email = email
         db.session.commit()
-    def __repr__(self):
-        return '<User %r>' % self.nome
+    
 class Usuario(db.Model):
     __tablename__ = "Usuario"
     id = db.Column(db.Integer, primary_key=True)

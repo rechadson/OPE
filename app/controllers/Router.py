@@ -1,6 +1,6 @@
 # coding=utf-8
 from app import app,db
-from flask import render_template, redirect, url_for, flash,session
+from flask import render_template, redirect, url_for, flash,session,request
 from app.models import forms, tables
 
 
@@ -58,4 +58,29 @@ def Cadastrar_fornecedor():
 @app.route("/fornecedor/", methods=["GET","POST"])
 def Pesquisar_fornecedor():
     form = forms.FornecedorForm()
-    return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,fornecedores=tables.Fornecedor.getAllFornecedor())
+    
+    if form.validate_on_submit():
+        formCnpj = int(form.cnpj.data)
+        fornecedore=tables.Fornecedor.getFornecedor(formCnpj)
+        if fornecedore:
+            return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,pesquisa=True,fornecedores=tables.Fornecedor.getFornecedor(formCnpj))
+        
+        else:
+            return redirect(url_for('Pesquisar_fornecedor'))
+    return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,fornecedores=[])
+@app.route("/fornecedor/atualizar/<cnpj>", methods=["GET","POST"])
+def atualizar_fornecedor(cnpj):
+    form = forms.FornecedorForm(request.form)
+    if request.method == 'POST':
+        formNome= str(request.form['fornecedor'])
+        formEmail = str(request.form['email'])
+        formCnpj = int(request.form['cnpj'])
+        
+        if form.validate_on_submit():
+            tables.Fornecedor.setFornecedor(formNome,formEmail,formCnpj)
+            return redirect(url_for('Pesquisar_fornecedor'))
+        else:
+            return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,pesquisa=True,atualizar=True,fornecedores=tables.Fornecedor.getFornecedor(cnpj))
+
+        
+    return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,pesquisa=True,atualizar=True,fornecedores=tables.Fornecedor.getFornecedor(cnpj))
