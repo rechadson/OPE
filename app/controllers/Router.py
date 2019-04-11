@@ -58,11 +58,15 @@ def Cadastrar_fornecedor():
 @app.route("/fornecedor/", methods=["GET","POST"])
 def Pesquisar_fornecedor():
     form = forms.FornecedorForm()
-    print("fonecedor init")
+    
     if form.validate_on_submit():
         formCnpj = int(form.cnpj.data)
-        return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,pesquisa=True,fornecedores=tables.Fornecedor.getFornecedor(formCnpj))
-
+        fornecedore=tables.Fornecedor.getFornecedor(formCnpj)
+        if fornecedore:
+            return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,pesquisa=True,fornecedores=tables.Fornecedor.getFornecedor(formCnpj))
+        
+        else:
+            return redirect(url_for('Pesquisar_fornecedor'))
     return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,fornecedores=[])
 @app.route("/fornecedor/atualizar/<cnpj>", methods=["GET","POST"])
 def atualizar_fornecedor(cnpj):
