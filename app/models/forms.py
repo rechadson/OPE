@@ -6,6 +6,7 @@ class FornecedorForm(FlaskForm):
     cnpj = IntegerField("cnpj",validators=[DataRequired()])
     fornecedor = StringField("fornecedor",validators=[DataRequired()])
     email = StringField("email",validators=[DataRequired()])
+    print(fornecedor)
 
 class LoginForm(FlaskForm):
     username = StringField("username",validators=[DataRequired()])
