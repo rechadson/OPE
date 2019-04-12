@@ -70,7 +70,7 @@
                   
                 </div>
               </div>
-              {% for Produto in produtos %} {%if Produto.nome == "teste2" %}{{Produto.preco}}{%endif%} {% endfor %}
+              {% for Produto in produtos %} {%if Produto.nome == "teste2" %}{{Produto.preco}}{%endif%}{%endfor%} 
             </div>
       </form>
     </div>
@@ -80,18 +80,28 @@
 <script>
 			$(function () {
 			    var scntDiv = $('#produto');
+          var preco;
+          var QtdAcomodacaoD = $("#inlineFormCustomSelect option:selected").text();
 			    $(document).on('click', '#addInput', function () {
-            var QtdAcomodacaoD = $("#inlineFormCustomSelect option:selected").text();
+ 
+            $.getJSON('/orcamento/adicionar/produto/', {
+        nome: QtdAcomodacaoD,
+        
+      }, function(data) {
+        preco = data.preco;
+      });
+            
 			        $('<li class="list-group-item d-flex justify-content-between lh-condensed">'+
           '<div>'+
             '<h6 class="my-0">'+QtdAcomodacaoD+'</h6>'+
             '<small class="text-muted">Brief description</small>'+
           '</div>'+
-          '<span class="text-muted">'+'{% for Produto in produtos %}{%if Produto.nome == QtdAcomodacaoD %}{{Produto.preco}}{%endif%} {% endfor %}'+'</span>'+
+          '<span class="text-muted" id="preco">'+preco+'</span>'+
         '<a class="btn btn-danger" href="javascript:void(0)" id="remInput">'+
 							'<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> '+
 							'Remover produto'+
 		        		'</a>'+'</li>').appendTo(scntDiv);
+                
 			        return false;
 			    });
 			    $(document).on('click', '#remInput', function () {

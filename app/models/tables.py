@@ -19,6 +19,7 @@ class Produtos(db.Model):
     def getAllProduto():
         produto = Produtos.query.all()
         return produto
+    
 
     def __repr__(self):
         return '<User %r>' % self.nome

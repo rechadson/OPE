@@ -42,6 +42,17 @@ def index(user):
 def Orcamento():
     
     return render_template('Orcamentoteste.html',produtos = tables.Produtos.getAllProduto())
+@app.route("/orcamento/adicionar/produto/", methods=["GET","POST"])
+def AdicionarProduto():
+    produtos = tables.Produtos.getAllProduto()
+    adicionarProduto = request.args.get('nome', 0, type=str)
+    lista = []
+    for produto in produto:
+        if adicionarProduto == produto:
+            prod = {"nome":produto.nome,"preco":produto.preco,"fornecedor":produto.fornecedor_id}
+            lista.append(prod)
+    
+    return jsonify(lista)
 
 @app.route("/fornecedor/cadastrar/", methods=["GET","POST"])
 def Cadastrar_fornecedor():
