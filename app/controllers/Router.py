@@ -142,7 +142,6 @@ def Pesquisar_cliente():
             return redirect(url_for('Pesquisar_cliente'))
     return render_template('cliente.html',ClienteForm=form,cadastrar=False,clientes=tables.Cliente.getAllCliente())
 
-
 @app.route("/cliente/atualizar/<cpf>", methods=["GET","POST"])
 def atualizar_cliente(cpf):
     form = forms.ClienteForm(request.form)

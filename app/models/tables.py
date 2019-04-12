@@ -63,7 +63,6 @@ class Cliente(db.Model):
     def setCliente(nome,CPF,telefone,endereco):
         cliente = Cliente.query.filter_by(CPF = CPF).first()
         cliente.nome = nome
-        cliente.CPF = CPF
         cliente.telefone = telefone
         cliente.endereco = endereco
         db.session.commit()
