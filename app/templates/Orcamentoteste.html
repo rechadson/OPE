@@ -4,60 +4,39 @@
 <div class="container">
   <div class="py-5 text-center">
   </div>
-
+  <form class="needs-validation" novalidate>
   <div class="row">
     <div class="col-md-4 order-md-2 mb-4">
       <h4 class="d-flex justify-content-between align-items-center mb-3">
-        <span class="text-muted">Your cart</span>
-        <span class="badge badge-secondary badge-pill">3</span>
+        <span class="text-muted">Items do Orçamento</span>
+        <span class="badge badge-secondary badge-pill"></span>
       </h4>
       <ul class="list-group mb-3">
-        <div id="produto">
+        <div class="produto">
         
       </div>
-        <li class="list-group-item d-flex justify-content-between lh-condensed">
-          <div>
-            <h6 class="my-0">Second product</h6>
-            <small class="text-muted">Brief description</small>
-          </div>
-          <span class="text-muted">$8</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between lh-condensed">
-          <div>
-            <h6 class="my-0">Third item</h6>
-            <small class="text-muted">Brief description</small>
-          </div>
-          <span class="text-muted">$5</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between bg-light">
-          <div class="text-success">
-            <h6 class="my-0">Promo code</h6>
-            <small>EXAMPLECODE</small>
-          </div>
-          <span class="text-success">-$5</span>
-        </li>
+    </form>  
         <li class="list-group-item d-flex justify-content-between">
-          <span>Total (USD)</span>
-          <strong>$20</strong>
+          <span>Total (R$)</span>
+          <strong id="total">$0</strong>
         </li>
       </ul>
 
       <form class="card p-2">
         <div class="input-group">
-          <input type="text" class="form-control" placeholder="Promo code">
-          <div class="input-group-append">
-            <button type="submit" class="btn btn-secondary">Redeem</button>
+            <div class="input-group-append">
+            <button type="button" class="btn btn-secondary" id="gerar">Gerar Orçamento</button>
           </div>
         </div>
       </form>
     </div>
     <div class="col-md-8 order-md-1">
       <h4 class="mb-3">Produtos</h4>
-      <form class="needs-validation" novalidate>
+      <form class="needs-validation" novalidate id="formprod">
           <div class="form-row align-items-center">
               <div class="col-auto my-1">
                 <label class="mr-sm-2 sr-only" for="inlineFormCustomSelect">Preferência</label>
-                <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
+                <select class="custom-select mr-sm-2" id="inlineFormCustomSelect"name="prod">
                   <option selected>Escolher...</option>
                   {% for Produto in produtos %}
                   <option>{{ Produto.nome }}</option>
@@ -70,7 +49,10 @@
                   
                 </div>
               </div>
-              {% for Produto in produtos %} {%if Produto.nome == "teste2" %}{{Produto.preco}}{%endif%}{%endfor%} 
+            </div>
+            <div class="ccol-auto mb-1">
+              <label for="primeiroNome">CPF</label>
+              <input type="text" class="form-control" id="CPF" name="cpf_cliente"placeholder="Digite o CPF do Cliente" value="" required>
             </div>
       </form>
     </div>
@@ -79,28 +61,41 @@
 </div>
 <script>
 			$(function () {
-			    var scntDiv = $('#produto');
-          var preco;
-          var QtdAcomodacaoD = $("#inlineFormCustomSelect option:selected").text();
-			    $(document).on('click', '#addInput', function () {
- 
-            $.getJSON('/orcamento/adicionar/produto/', {
-        nome: QtdAcomodacaoD,
-        
-      }, function(data) {
-        preco = data.preco;
-      });
-            
-			        $('<li class="list-group-item d-flex justify-content-between lh-condensed">'+
-          '<div>'+
-            '<h6 class="my-0">'+QtdAcomodacaoD+'</h6>'+
-            '<small class="text-muted">Brief description</small>'+
+			    var scntDiv = $('.produto');
+          $(document).on('click', '#addInput', function () {
+            $.ajax({
+            url: '/adicionar/produto/',
+            data: $('#formprod').serialize(),
+            type: 'POST',
+            success: function(response) {
+              $('<li class="list-group-item d-flex justify-content-between lh-condensed">'+
+          '<div id="preco">'+
+            '<h6 class="my-0">'+response.nome+'</h6>'+
+            '<small class="text-muted" name="nome_Produto">'+response.nome+'</small>'+
           '</div>'+
-          '<span class="text-muted" id="preco">'+preco+'</span>'+
+          '<span class="text">'+response.preco+'</span>'+
         '<a class="btn btn-danger" href="javascript:void(0)" id="remInput">'+
 							'<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> '+
 							'Remover produto'+
-		        		'</a>'+'</li>').appendTo(scntDiv);
+                '</a>'+'</li>').appendTo(scntDiv);
+             
+              var itens = document.querySelectorAll(".text");
+              var total = 0;
+              console.log(itens);
+              itens.forEach.call(itens, function(item) {
+                console.log(item);
+                total += parseInt(Number(item));
+
+              });
+
+              $('#total').text(total);
+                          
+                            
+                          },
+            error: function(error) {
+                console.log(error);
+            }
+          });
                 
 			        return false;
 			    });
@@ -108,6 +103,33 @@
 		            $(this).parents('li').remove();
 			        return false;
 			    });
-			});
+          $(document).on('click', '#gerar', function () {
+            var scntDiv = $('.produto');
+            $.ajax({
+            url: '/orcamento/cadastrar/',
+            data: $('.needs-validation').serialize(),
+            type: 'POST',
+            success: function(response) {
+              console.log(response);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+          });
+                
+			        return false;
+			    });
+			    });
+      $("#formprod").blur(function(){
+            //declaro uma var para somar o total
+            var total = 0;
+            //faço um foreach percorrendo todos os inputs com a class soma e faço a soma na var criada acima
+            $(".soma").each(function(){
+                total = total + Number($(this).val());  
+            });
+            //mostro o total no input Sub Total
+            $("#total").val(total);
+        });
+      
 			</script>
 {% endblock %}

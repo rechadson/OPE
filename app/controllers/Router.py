@@ -42,18 +42,16 @@ def index(user):
 def Orcamento():
     
     return render_template('Orcamentoteste.html',produtos = tables.Produtos.getAllProduto())
-@app.route("/orcamento/adicionar/produto/", methods=["GET","POST"])
+@app.route("/adicionar/produto/", methods=["GET","POST"])
 def AdicionarProduto():
     produtos = tables.Produtos.getAllProduto()
-    adicionarProduto = request.args.get('nome', 0, type=str)
-    lista = []
-    for produto in produto:
-        if adicionarProduto == produto:
-            prod = {"nome":produto.nome,"preco":produto.preco,"fornecedor":produto.fornecedor_id}
-            lista.append(prod)
+    prod =  str(request.form['prod'])
     
-    return jsonify(lista)
-
+    for produto in produtos:
+        if produto.nome == prod:
+            print(prod)
+            return jsonify({"nome":produto.nome,"preco":produto.preco,"fornecedor":produto.fornecedor_id})
+    
 @app.route("/fornecedor/cadastrar/", methods=["GET","POST"])
 def Cadastrar_fornecedor():
     form = forms.FornecedorForm()
@@ -95,3 +93,17 @@ def atualizar_fornecedor(cnpj):
 
         
     return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,pesquisa=True,atualizar=True,fornecedores=tables.Fornecedor.getFornecedor(cnpj))
+@app.route("/orcamento/cadastrar/", methods=["GET","POST"])
+def Cadastrar_Orcamento():
+    
+    if request.method == 'POST':
+        formCPF= str(request.form['cpf_cliente'])
+        
+        print(formCPF)
+        produtos = tables.Produtos.getAllProduto()
+        return jsonify({"nome":produto.nome,"preco":produto.preco,"fornecedor":produto.fornecedor_id})
+        tables.Fornecedor.insertFornecedor(formNome,formEmail,formCnpj)
+        
+        
+        
+    return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=True) 
