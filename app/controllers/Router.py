@@ -41,7 +41,7 @@ def index(user):
 @app.route("/orcamento/", methods=["GET","POST"])
 def Orcamento():
     
-    return render_template('Orcamento.html',produtos = tables.Produtos.getAllProduto()) 
+    return render_template('Orcamentoteste.html',produtos = tables.Produtos.getAllProduto()) 
 
 @app.route("/fornecedor/cadastrar/", methods=["GET","POST"])
 def Cadastrar_fornecedor():
