@@ -1,6 +1,6 @@
 # coding=utf-8
 from app import app,db
-from flask import render_template, redirect, url_for, flash,session
+from flask import render_template, redirect, url_for, flash,session,request,jsonify
 from app.models import forms, tables
 
 
@@ -41,8 +41,17 @@ def index(user):
 @app.route("/orcamento/", methods=["GET","POST"])
 def Orcamento():
     
-    return render_template('Orcamento.html',produtos = tables.Produtos.getAllProduto()) 
-
+    return render_template('Orcamentoteste.html',produtos = tables.Produtos.getAllProduto())
+@app.route("/adicionar/produto/", methods=["GET","POST"])
+def AdicionarProduto():
+    produtos = tables.Produtos.getAllProduto()
+    prod =  str(request.form['prod'])
+    
+    for produto in produtos:
+        if produto.nome == prod:
+            print(prod)
+            return jsonify({"nome":produto.nome,"preco":produto.preco,"fornecedor":produto.fornecedor_id})
+    
 @app.route("/fornecedor/cadastrar/", methods=["GET","POST"])
 def Cadastrar_fornecedor():
     form = forms.FornecedorForm()
@@ -58,4 +67,43 @@ def Cadastrar_fornecedor():
 @app.route("/fornecedor/", methods=["GET","POST"])
 def Pesquisar_fornecedor():
     form = forms.FornecedorForm()
-    return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,fornecedores=tables.Fornecedor.getAllFornecedor())
+    
+    if form.validate_on_submit():
+        formCnpj = int(form.cnpj.data)
+        fornecedore=tables.Fornecedor.getFornecedor(formCnpj)
+        if fornecedore:
+            return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,pesquisa=True,fornecedores=tables.Fornecedor.getFornecedor(formCnpj))
+        
+        else:
+            return redirect(url_for('Pesquisar_fornecedor'))
+    return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,fornecedores=[])
+@app.route("/fornecedor/atualizar/<cnpj>", methods=["GET","POST"])
+def atualizar_fornecedor(cnpj):
+    form = forms.FornecedorForm(request.form)
+    if request.method == 'POST':
+        formNome= str(request.form['fornecedor'])
+        formEmail = str(request.form['email'])
+        formCnpj = int(request.form['cnpj'])
+        
+        if form.validate_on_submit():
+            tables.Fornecedor.setFornecedor(formNome,formEmail,formCnpj)
+            return redirect(url_for('Pesquisar_fornecedor'))
+        else:
+            return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,pesquisa=True,atualizar=True,fornecedores=tables.Fornecedor.getFornecedor(cnpj))
+
+        
+    return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,pesquisa=True,atualizar=True,fornecedores=tables.Fornecedor.getFornecedor(cnpj))
+@app.route("/orcamento/cadastrar/", methods=["GET","POST"])
+def Cadastrar_Orcamento():
+    
+    if request.method == 'POST':
+        formCPF= str(request.form['cpf_cliente'])
+        
+        print(formCPF)
+        produtos = tables.Produtos.getAllProduto()
+        return jsonify({"nome":produto.nome,"preco":produto.preco,"fornecedor":produto.fornecedor_id})
+        tables.Fornecedor.insertFornecedor(formNome,formEmail,formCnpj)
+        
+        
+        
+    return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=True) 

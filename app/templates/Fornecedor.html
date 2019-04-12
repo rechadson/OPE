@@ -1,7 +1,8 @@
 {% extends "baseNavbar.html" %}
 {% block content %}
-<form action = "/fornecedor/cadastrar/" method = "POST">
-    {% if cadastrar %}    
+{% if cadastrar %}
+<form  method = "POST">
+        
     <div class="form-group">
         {{ FornecedorForm.csrf_token }} 
         <label for="CNPJ">CNPJ</label>
@@ -21,25 +22,58 @@
         {% for message in messages %}
           <p class="alert alert-danger">{{ message }}</p>
         {% endfor %}
-      {% endif %}
-    {% endwith %}
-   
-    <button type="submit" class="btn btn-primary">Enviar</button>
+        {% endif %}
+      {% endwith %}
+     <button type="submit" class="btn btn-primary" action="/fornecedor/cadastrar/">Enviar</button>
   </form>
   
   {%else%}
-  <div class="form-group">
-        <label for="exampleFormControlSelect1">Fornecedor</label>
-        <select class="form-control" id="exampleFormControlSelect1">
-          {% for fornecedor in fornecedores %}
-            <option>{{ fornecedor.nome }}</option>
-          {% endfor %}
-          </select>
-      </div>
-      {% endif %}
+  <form  method = "POST">
+  {{ FornecedorForm.csrf_token }} 
+  {% if pesquisa %} 
+    {%for fon in fornecedores%}
 
-    <script>
-            document.getElementById("myImage").src = "landscape.jpg";
-    </script>
-            
+    <div class="form-group">
+      <label for="cnpj">CNPJ:</label>
+      <input type="text" class="form-control" id="cnpj" name="cnpj"value="{{fon.cnpj}}">
+      
+    </div>
+    <div class="form-group">
+      <label for="fornecedor">Nome do fornecedor:</label>
+      <input type="text" class="form-control" id="fornecedor" name="fornecedor"value="{{fon.nome}}">
+      
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" class="form-control" id="email" name="email" value="{{fon.email}}">
+    </div>
+    
+    
+    <div class="form-group">
+    <button type="submit" class="btn btn-primary" formaction="/fornecedor/atualizar/{{fon.cnpj}}" style={% if pesquisa %} "display:Line"{%else%}"display:none"{%endif%}>Atualizar Fornecedor</button>         
+    </div>
+    {%endfor%}
+    {%else%}
+    <div class="form-group">
+      {{ FornecedorForm.csrf_token }} 
+      <label for="CNPJ">CNPJ</label>
+      {{FornecedorForm.cnpj(id="CNPJ",class="form-control", placeholder="CNPJ da empresa")}}
+      </div>
+      <div class="form-group">
+        {{ FornecedorForm.fornecedor(class="form-control", id="nome", placeholder="fornecedor",value="nome",style="display:none")}}
+      </div>
+  
+      <div class="form-group">
+        {{ FornecedorForm.email(type="email",class="form-control", id="Email1", placeholder="Seu email",value="email@email",style="display:none") }}
+     </div>
+      {%endif%}
+    <div class="form-group">
+    <button type="submit" class="btn btn-primary" style = {% if pesquisa %}"display:none"{%endif%}>{% if pesquisa %} Voltar{%else%} Pesquisar{%endif%}</button>
+    </div>
+    <div class="form-group">
+    </div>
+    
+{% endif %}
+
+</form>
 {% endblock %}

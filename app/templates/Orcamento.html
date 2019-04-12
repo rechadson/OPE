@@ -1,19 +1,25 @@
 {% extends "baseNavbar.html" %}
-{% block body %}
+{% block content %}
+
 <form>
-    
-        <div class="form-group">
-          <label for="exampleFormControlSelect1">Example select</label>
-          <select class="form-control" id="exampleFormControlSelect1">
-            {% for Produto in produtos %}
-              <option>{{ Produto.nome }}</option>
-            {% endfor %}
-            </select>
-        </div>
-        
-        <div class="form-group">
-          <label for="exampleFormControlTextarea1">Example textarea</label>
-          <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-        </div>
-      </form>
+<div class="form-row align-items-center">
+  <div class="col-auto my-1">
+    <label class="mr-sm-2 sr-only" for="inlineFormCustomSelect">Preferência</label>
+    <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
+      <option selected>Escolher...</option>
+      {% for Produto in produtos %}
+      <option>{{ Produto.nome }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-auto my-1">
+    <div class="custom-control custom-checkbox mr-sm-2">
+      <button type="submit" class="btn btn-primary">Adicionar</button>
+      
+    </div>
+  </div>
+  
+</div>
+</form>
+
 {% endblock %}

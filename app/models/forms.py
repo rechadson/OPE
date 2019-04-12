@@ -6,6 +6,7 @@ class FornecedorForm(FlaskForm):
     cnpj = IntegerField("cnpj",validators=[DataRequired()])
     fornecedor = StringField("fornecedor",validators=[DataRequired()])
     email = StringField("email",validators=[DataRequired()])
+    
 
 class LoginForm(FlaskForm):
     username = StringField("username",validators=[DataRequired()])
@@ -22,6 +23,6 @@ class ProdutoForm(FlaskForm):
     preco = StringField("preco",validators=[DataRequired()])
 
 class OrcamentoForm(FlaskForm):
-    codigo_Produto = StringField("codigo_Produto",validators=[DataRequired()])
+    nome_Produto = StringField("nome_Produto",validators=[DataRequired()])
     cpf_cliente = StringField("cpf_cliente",validators=[DataRequired()])
-    Quantidade = IntegerField("Quantidade",validators=[DataRequired()])
+    
