@@ -1,7 +1,7 @@
 function duplicarCampos(){
-	var clone = document.getElementById('inlineFormCustomSelect').cloneNode(true);
+	var clone = document.getElementsByClassName('produto').clo(true);
 	var destino = document.getElementsByClassName('produto');
-	destino.appendChild (clone.getElementById('inlineFormCustomSelect'));
+	destino.appendChild (clone);
 	
 	///var camposClonados = clone.getElementsByTagName('input');
 	

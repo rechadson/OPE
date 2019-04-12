@@ -12,14 +12,8 @@
         <span class="badge badge-secondary badge-pill">3</span>
       </h4>
       <ul class="list-group mb-3">
-        <div class="produto">
-        <li class="list-group-item d-flex justify-content-between lh-condensed" id="produto" >
-          <div>
-            <h6 class="my-0">Product name</h6>
-            <small class="text-muted">Brief description</small>
-          </div>
-          <span class="text-muted">$12</span>
-        </li>
+        <div id="produto">
+        
       </div>
         <li class="list-group-item d-flex justify-content-between lh-condensed">
           <div>
@@ -72,15 +66,38 @@
               </div>
               <div class="col-auto my-1">
                 <div class="custom-control custom-checkbox mr-sm-2">
-                  <button class="btn btn-primary" onclick="duplicarCampos()">Adicionar</button>
+                  <button class="btn btn-primary" type="button"  id="addInput">Adicionar</button>
                   
                 </div>
               </div>
-              
+              {% for Produto in produtos %} {%if Produto.nome == "teste2" %}{{Produto.preco}}{%endif%} {% endfor %}
             </div>
       </form>
     </div>
   </div>
 
 </div>
+<script>
+			$(function () {
+			    var scntDiv = $('#produto');
+			    $(document).on('click', '#addInput', function () {
+            var QtdAcomodacaoD = $("#inlineFormCustomSelect option:selected").text();
+			        $('<li class="list-group-item d-flex justify-content-between lh-condensed">'+
+          '<div>'+
+            '<h6 class="my-0">'+QtdAcomodacaoD+'</h6>'+
+            '<small class="text-muted">Brief description</small>'+
+          '</div>'+
+          '<span class="text-muted">'+'{% for Produto in produtos %}{%if Produto.nome == QtdAcomodacaoD %}{{Produto.preco}}{%endif%} {% endfor %}'+'</span>'+
+        '<a class="btn btn-danger" href="javascript:void(0)" id="remInput">'+
+							'<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> '+
+							'Remover produto'+
+		        		'</a>'+'</li>').appendTo(scntDiv);
+			        return false;
+			    });
+			    $(document).on('click', '#remInput', function () {
+		            $(this).parents('li').remove();
+			        return false;
+			    });
+			});
+			</script>
 {% endblock %}

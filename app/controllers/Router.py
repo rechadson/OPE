@@ -1,6 +1,6 @@
 # coding=utf-8
 from app import app,db
-from flask import render_template, redirect, url_for, flash,session,request
+from flask import render_template, redirect, url_for, flash,session,request,jsonify
 from app.models import forms, tables
 
 
@@ -41,7 +41,7 @@ def index(user):
 @app.route("/orcamento/", methods=["GET","POST"])
 def Orcamento():
     
-    return render_template('Orcamentoteste.html',produtos = tables.Produtos.getAllProduto()) 
+    return render_template('Orcamentoteste.html',produtos = tables.Produtos.getAllProduto())
 
 @app.route("/fornecedor/cadastrar/", methods=["GET","POST"])
 def Cadastrar_fornecedor():
