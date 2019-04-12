@@ -19,6 +19,7 @@ class Produtos(db.Model):
     def getAllProduto():
         produto = Produtos.query.all()
         return produto
+    
 
     def __repr__(self):
         return '<User %r>' % self.nome
@@ -52,7 +53,13 @@ class Orcamento(db.Model):
         self.data = data
         self.cliente_cpf = cliente_cpf
 
+    def insertOrcamento(preco,data,cliente_cpf):
+        inserir = Orcamento(preco,data,cliente_cpf)
+        db.session.add(inserir)
+        db.session.commit()
+
 class Orcamento_Produto(db.Model):
+    __tablename__ = "Orcamento_Produto"
     id = db.Column(db.Integer, primary_key=True)
     orcamento_id = db.Column(db.Integer,db.ForeignKey('Orcamento.id'))
     orcamento = db.relationship('Orcamento',foreign_keys=orcamento_id)
@@ -62,6 +69,12 @@ class Orcamento_Produto(db.Model):
     def __init__(self,orcamento_id,Produto_id):        
         self.orcamento_id = orcamento_id
         self.Produto_id = Produto_id
+
+    def insertOrcamentoProduto(orcamento_id,Produto_id):
+        inserir = Orcamento_Produto(orcamento_id,Produto_id)
+        db.session.add(inserir)
+        db.session.commit()
+   
 
 class Pedido(db.Model):
     __tablename__ = "Pedido"
