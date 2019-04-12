@@ -84,3 +84,97 @@ def atualizar_fornecedor(cnpj):
 
         
     return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,pesquisa=True,atualizar=True,fornecedores=tables.Fornecedor.getFornecedor(cnpj))
+
+
+@app.route("/cliente/cadastrar/", methods=["GET","POST"])
+def Cadastrar_cliente():
+    form = forms.ClienteForm()
+    if form.validate_on_submit():
+        formNome= str(form.nome.data)
+        formCpf = str(form.cpf.data)
+        formTelefone = str(form.telefone.data)
+        formEndereco = str(form.endereco.data)
+        tables.Cliente.insertCliente(formNome,formCpf,formTelefone,formEndereco)
+        return redirect(url_for('Cadastrar_cliente'))
+
+    return render_template("cliente.html", ClienteForm=form, cadastrar=True )
+
+
+@app.route("/produto/cadastrar/", methods=["GET","POST"])
+def Cadastrar_produto():
+    form = forms.ProdutoForm()
+    if form.validate_on_submit():
+        formNome= str(form.nome.data)
+        formPreco = str(form.preco.data)
+        formFornecedor = str(form.fornecedor.data)
+        tables.Produtos.insertProduto(formNome,formPreco,formFornecedor)
+        return redirect(url_for('Cadastrar_produto'))
+
+    return render_template("produto.html", ProdutoForm=form, cadastrar=True )
+
+@app.route("/produto/", methods=["GET","POST"])
+def Pesquisar_produto():
+    form = forms.ProdutoForm()
+    
+    if form.validate_on_submit():
+        formNome = str(form.nome.data)
+        produt=tables.Produtos.getProduto(formNome)
+        if produt:
+            return render_template('produto.html',ProdutoForm=form,cadastrar=False,pesquisa=True,produtos=tables.Produtos.getProduto(formNome))
+        
+        else:
+            return redirect(url_for('Pesquisar_produto'))
+    return render_template('produto.html',ProdutoForm=form,cadastrar=False,produtos=tables.Produtos.getAllProduto())
+
+
+
+@app.route("/cliente/", methods=["GET","POST"])
+def Pesquisar_cliente():
+    form = forms.ClienteForm()
+    
+    if form.validate_on_submit():
+        formCpf = str(form.cpf.data)
+        client=tables.Cliente.getCliente(formCpf)
+        if client:
+            return render_template('cliente.html',ClienteForm=form,cadastrar=False,pesquisa=True,clientes=tables.Cliente.getCliente(formCpf))
+        
+        else:
+            return redirect(url_for('Pesquisar_cliente'))
+    return render_template('cliente.html',ClienteForm=form,cadastrar=False,clientes=tables.Cliente.getAllCliente())
+
+
+@app.route("/cliente/atualizar/<cpf>", methods=["GET","POST"])
+def atualizar_cliente(cpf):
+    form = forms.ClienteForm(request.form)
+    if request.method == 'POST':
+        formNome= str(request.form['nome'])
+        formCpf = str(request.form['cpf'])
+        formTelefone = str(request.form["telefone"])
+        formEndereco = str(request.form['endereco'])
+        
+        if form.validate_on_submit():
+            tables.Cliente.setCliente(formNome,formCpf,formTelefone,formEndereco)
+            return redirect(url_for('Pesquisar_cliente'))
+        else:
+            return render_template('cliente.html',ClienteForm=form,cadastrar=False,pesquisa=True,atualizar=True,clientes=tables.Cliente.getCliente(cpf))
+
+        
+    return render_template('cliente.html',ClienteForm=form,cadastrar=False,pesquisa=True,atualizar=True,clientes=tables.Cliente.getCliente(cpf))
+
+
+@app.route("/produto/atualizar/<nome>", methods=["GET","POST"])
+def atualizar_produto(nome):
+    form = forms.ProdutoForm(request.form)
+    if request.method == 'POST':
+        formNome= str(request.form['nome'])
+        formPreco = str(request.form['preco'])
+        formFornecedor = str(request.form["fornecedor"])
+        
+        if form.validate_on_submit():
+            tables.Produtos.setProduto(formNome,formPreco,formFornecedor)
+            return redirect(url_for('Pesquisar_produto'))
+        else:
+            return render_template('produto.html',ProdutoForm=form,cadastrar=False,pesquisa=True,atualizar=True,produtos=tables.Produtos.getProduto(nome))
+
+        
+    return render_template('produto.html',ProdutoForm=form,cadastrar=False,pesquisa=True,atualizar=True,produtos=tables.Produtos.getProduto(nome))

@@ -13,14 +13,15 @@ class LoginForm(FlaskForm):
     password = PasswordField("password",validators=[DataRequired()])
 
 class ClienteForm(FlaskForm):
-    name = StringField("nome",validators=[DataRequired()])
+    nome = StringField("nome",validators=[DataRequired()])
     cpf = StringField("cpf",validators=[DataRequired()])
+    telefone = StringField("telefone", validators=[DataRequired()])
     endereco = StringField("endereco",validators=[DataRequired()])
 
 class ProdutoForm(FlaskForm):
-    codigo = StringField("codigo",validators=[DataRequired()])
-    Nome = StringField("Nome",validators=[DataRequired()])
+    nome = StringField("nome",validators=[DataRequired()])
     preco = StringField("preco",validators=[DataRequired()])
+    fornecedor = IntegerField("fornecedor_id",validators=[DataRequired()])
 
 class OrcamentoForm(FlaskForm):
     codigo_Produto = StringField("codigo_Produto",validators=[DataRequired()])

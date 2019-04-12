@@ -1,2 +1,93 @@
-{{ LoginForm.csrf_token }}
-{{LoginForm.username}}
+{% extends "baseNavbar.html" %}
+{% block content %}
+{% if cadastrar %}
+<form  method = "POST">
+        
+    <div class="form-group">
+        {{ ClienteForm.csrf_token }} 
+        <label for="cpf">CPF</label>
+        {{ ClienteForm.cpf(id="cpf",class="form-control", placeholder="CPF do Cliente")}}
+    </div>
+    <div class="form-group">
+        <label for="nome">Nome do Cliente</label>
+        {{ ClienteForm.nome(class="form-control", id="nome", placeholder="Cliente") }}
+        </div>
+
+    <div class="form-group">
+        <label for="Telefone">Telefone do Cliente</label>
+        {{ ClienteForm.telefone(type="telefone",class="form-control", id="Telefone", placeholder="Seu Telefone") }}
+    </div>
+
+    <div class="form-group">
+        <label for="endereco">Endereço do Cliente</label>
+        {{ ClienteForm.endereco(type="endereco",class="form-control", id="endereco", placeholder="Seu Endereço") }}
+    </div>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <p class="alert alert-danger">{{ message }}</p>
+        {% endfor %}
+        {% endif %}
+      {% endwith %}
+     <button type="submit" class="btn btn-primary" action="/cliente/cadastrar/">Enviar</button>
+  </form>
+  
+  {%else%}
+  <form  method = "POST">
+  {{ ClienteForm.csrf_token }} 
+  {% if pesquisa %} 
+    {%for fon in clientes%}
+
+    <div class="form-group">
+      <label for="cpf">CPF:</label>
+      <input type="text" class="form-control" id="cpf" name="cpf"value="{{fon.CPF}}">
+      
+    </div>
+    <div class="form-group">
+      <label for="cliente">Nome do Cliente:</label>
+      <input type="text" class="form-control" id="cliente" name="cliente"value="{{fon.nome}}">
+      
+    </div>
+    <div class="form-group">
+      <label for="telefone">Telefone</label>
+      <input type="telefone" class="form-control" id="telefone" name="telefone" value="{{fon.telefone}}">
+    </div>
+
+    <div class="form-group">
+      <label for="endereco">Endereço</label>
+      <input type="endereco" class="form-control" id="endereco" name="endereco" value="{{fon.Endereco}}">
+    </div>
+    
+    
+    <div class="form-group">
+    <button type="submit" class="btn btn-primary" formaction="/cliente/atualizar/{{fon.cpf}}" style={% if pesquisa %} "display:Line"{%else%}"display:none"{%endif%}>Atualizar Cliente</button>         
+    </div>
+    {%endfor%}
+    {%else%}
+    <div class="form-group">
+      {{ ClienteForm.csrf_token }} 
+      <label for="cpf">CPF</label>
+      {{ClienteForm.cpf(id="cpf",class="form-control", placeholder="CPF do Cliente")}}
+      </div>
+      <div class="form-group">
+        {{ ClienteForm.nome(class="form-control", id="nome", placeholder="cliente",value="nome",style="display:none")}}
+      </div>
+  
+      <div class="form-group">
+        {{ ClienteForm.telefone(type="telefone",class="form-control", id="telefone", placeholder="Seu Telefone",value="(11) 94176-0466",style="display:none") }}
+     </div>
+
+     <div class="form-group">
+        {{ ClienteForm.endereco(type="endereco",class="form-control", id="endereco", placeholder="Seu Endereço",value="Rua das Ruas",style="display:none") }}
+     </div>
+      {%endif%}
+    <div class="form-group">
+    <button type="submit" class="btn btn-primary" style = {% if pesquisa %}"display:none"{%endif%}>{% if pesquisa %} Voltar{%else%} Pesquisar{%endif%}</button>
+    </div>
+    <div class="form-group">
+    </div>
+    
+{% endif %}
+
+</form>
+{% endblock %}

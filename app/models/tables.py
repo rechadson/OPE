@@ -12,19 +12,33 @@ class Produtos(db.Model):
         self.nome = nome
         self.preco = preco
         self.fornecedor_id = fornecedor_id
-    def getProduto(id):
-        produto = Produtos.query.filter_by(id = id).all()
-        return produto
+
+    def insertProduto(nome,preco,fornecedor_id):
+        inserir = Produtos(nome,preco,fornecedor_id)
+        db.session.add(inserir)
+        db.session.commit()
 
     def getAllProduto():
         produto = Produtos.query.all()
+        print(produto)
+        return produto
+
+    def setProduto(nome,preco,fornecedor_id):
+        produto = Produtos.query.filter_by(nome = nome).first()
+        produto.nome = nome
+        produto.preco = preco
+        produto.fornecedor_id = fornecedor_id
+        db.session.commit()
+
+    def getProduto(nome):
+        produto = Produtos.query.filter_by(nome = nome).all()
         return produto
 
     def __repr__(self):
         return '<User %r>' % self.nome
 
-class Clinte(db.Model):
-    __tablename__ = "Clinte"
+class Cliente(db.Model):
+    __tablename__ = "Cliente"
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(80), nullable=False)
     CPF = db.Column(db.String(80),unique=True, nullable=False)
@@ -36,6 +50,28 @@ class Clinte(db.Model):
         self.telefone = telefone
         self.Endereco = Endereco
 
+    def insertCliente(nome,CPF,telefone,endereco):
+        inserir = Cliente(nome,CPF,telefone,endereco)
+        db.session.add(inserir)
+        db.session.commit()
+
+    def getAllCliente():
+        cliente = Cliente.query.all()
+        print(cliente)
+        return cliente
+
+    def setCliente(nome,CPF,telefone,endereco):
+        cliente = Cliente.query.filter_by(CPF = CPF).first()
+        cliente.nome = nome
+        cliente.CPF = CPF
+        cliente.telefone = telefone
+        cliente.endereco = endereco
+        db.session.commit()
+
+    def getCliente(CPF):
+        cliente = Cliente.query.filter_by(CPF = CPF).all()
+        return cliente
+
     def __repr__(self):
         return '<Clinte %r>' % self.nome
 
@@ -44,8 +80,8 @@ class Orcamento(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     preco = db.Column(db.Float(120), nullable=False)
     data = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    cliente_cpf = db.Column(db.Integer,db.ForeignKey('Clinte.CPF'))
-    cliente = db.relationship('Clinte',foreign_keys=cliente_cpf)
+    cliente_cpf = db.Column(db.Integer,db.ForeignKey('Cliente.CPF'))
+    cliente = db.relationship('Cliente',foreign_keys=cliente_cpf)
 
     def __init__(self,cliente_cpf,preco,data):
         self.preco = preco

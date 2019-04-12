@@ -1,0 +1,81 @@
+{% extends "baseNavbar.html" %}
+{% block content %}
+{% if cadastrar %}
+<form  method = "POST">
+        
+    <div class="form-group">
+        {{ ProdutoForm.csrf_token }} 
+        <label for="nome">Nome</label>
+        {{ ProdutoForm.nome(id="nome",class="form-control", placeholder="Nome do Produto")}}
+    </div>
+    <div class="form-group">
+        <label for="preco">Preço do Produto</label>
+        {{ ProdutoForm.preco(class="form-control", id="preco", placeholder="Nome Produto") }}
+        </div>
+
+    <div class="form-group">
+        <label for="fornecedor">Fornecedor</label>
+        {{ ProdutoForm.fornecedor(type="fornecedor",class="form-control", id="fornecedor", placeholder="fornecedor") }}
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <p class="alert alert-danger">{{ message }}</p>
+        {% endfor %}
+        {% endif %}
+      {% endwith %}
+     <button type="submit" class="btn btn-primary" action="/produto/cadastrar/">Enviar</button>
+  </form>
+  
+  {%else%}
+  <form  method = "POST">
+  {{ ProdutoForm.csrf_token }} 
+  {% if pesquisa %} 
+    {%for fon in produtos%}
+
+    <div class="form-group">
+      <label for="nome">Nome:</label>
+      <input type="text" class="form-control" id="nome" name="nome"value="{{fon.nome}}">
+      
+    </div>
+    <div class="form-group">
+      <label for="preco">Preço do Produto:</label>
+      <input type="text" class="form-control" id="preco" name="preco"value="{{fon.preco}}">
+      
+    </div>
+    <div class="form-group">
+      <label for="fornecedor">fornecedor</label>
+      <input type="fornecedor" class="form-control" id="fornecedor" name="fornecedor" value="{{fon.fornecedor}}">
+    </div>
+    
+    
+    <div class="form-group">
+    <button type="submit" class="btn btn-primary" formaction="/produto/atualizar/{{fon.nome}}" style={% if pesquisa %} "display:Line"{%else%}"display:none"{%endif%}>Atualizar Produto</button>         
+    </div>
+    {%endfor%}
+    {%else%}
+    <div class="form-group">
+      {{ ProdutoForm.csrf_token }} 
+      <label for="nome">Nome</label>
+      {{ProdutoForm.nome(id="nome",class="form-control", placeholder="Nome do Produto")}}
+      </div>
+      <div class="form-group">
+        {{ ProdutoForm.preco(class="form-control", id="preco", placeholder="preco",value="preco",style="display:none")}}
+      </div>
+  
+      <div class="form-group">
+        {{ ProdutoForm.fornecedor(type="fornecedor",class="form-control", id="fornecedor", placeholder="fornecedor",style="display:none") }}
+     </div>
+
+      {%endif%}
+    <div class="form-group">
+    <button type="submit" class="btn btn-primary" style = {% if pesquisa %}"display:none"{%endif%}>{% if pesquisa %} Voltar{%else%} Pesquisar{%endif%}</button>
+    </div>
+    <div class="form-group">
+    </div>
+    
+{% endif %}
+
+</form>
+{% endblock %}
