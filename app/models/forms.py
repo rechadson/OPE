@@ -24,6 +24,6 @@ class ProdutoForm(FlaskForm):
     fornecedor = IntegerField("fornecedor_id",validators=[DataRequired()])
 
 class OrcamentoForm(FlaskForm):
-    codigo_Produto = StringField("codigo_Produto",validators=[DataRequired()])
+    nome_Produto = StringField("nome_Produto",validators=[DataRequired()])
     cpf_cliente = StringField("cpf_cliente",validators=[DataRequired()])
     
