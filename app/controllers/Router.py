@@ -93,8 +93,6 @@ def atualizar_fornecedor(cnpj):
 
         
     return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,pesquisa=True,atualizar=True,fornecedores=tables.Fornecedor.getFornecedor(cnpj))
-<<<<<<< HEAD
-
 
 @app.route("/cliente/cadastrar/", methods=["GET","POST"])
 def Cadastrar_cliente():
@@ -187,7 +185,7 @@ def atualizar_produto(nome):
 
         
     return render_template('produto.html',ProdutoForm=form,cadastrar=False,pesquisa=True,atualizar=True,produtos=tables.Produtos.getProduto(nome))
-=======
+
 @app.route("/orcamento/cadastrar/", methods=["GET","POST"])
 def Cadastrar_Orcamento():
     
@@ -202,4 +200,4 @@ def Cadastrar_Orcamento():
         
         
     return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=True) 
->>>>>>> 0facaa3b2b1d6fd9453ed20ed38f26879e5c6b64
+

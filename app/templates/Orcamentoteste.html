@@ -1,4 +1,7 @@
 {% extends "baseNavbar.html" %}
+{% block head %}
+<script src="{{ url_for('static', filename = 'Script_orcamento.js') }}" type="text/javascript"></script>
+{% endblock %}
 {% block content %}
 
 <div class="container">
@@ -8,7 +11,7 @@
   <div class="row">
     <div class="col-md-4 order-md-2 mb-4">
       <h4 class="d-flex justify-content-between align-items-center mb-3">
-        <span class="text-muted">Items do Orçamento</span>
+        <span class="text-muted">Itens do Orçamento</span>
         <span class="badge badge-secondary badge-pill"></span>
       </h4>
       <ul class="list-group mb-3">
@@ -59,77 +62,4 @@
   </div>
 
 </div>
-<script>
-			$(function () {
-			    var scntDiv = $('.produto');
-          $(document).on('click', '#addInput', function () {
-            $.ajax({
-            url: '/adicionar/produto/',
-            data: $('#formprod').serialize(),
-            type: 'POST',
-            success: function(response) {
-              $('<li class="list-group-item d-flex justify-content-between lh-condensed">'+
-          '<div id="preco">'+
-            '<h6 class="my-0">'+response.nome+'</h6>'+
-            '<small class="text-muted" name="nome_Produto">'+response.nome+'</small>'+
-          '</div>'+
-          '<span class="text">'+response.preco+'</span>'+
-        '<a class="btn btn-danger" href="javascript:void(0)" id="remInput">'+
-							'<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> '+
-							'Remover produto'+
-                '</a>'+'</li>').appendTo(scntDiv);
-             
-              var itens = document.querySelectorAll(".text");
-              var total = 0;
-              console.log(itens);
-              itens.forEach.call(itens, function(item) {
-                console.log(item);
-                total += parseInt(Number(item));
-
-              });
-
-              $('#total').text(total);
-                          
-                            
-                          },
-            error: function(error) {
-                console.log(error);
-            }
-          });
-                
-			        return false;
-			    });
-			    $(document).on('click', '#remInput', function () {
-		            $(this).parents('li').remove();
-			        return false;
-			    });
-          $(document).on('click', '#gerar', function () {
-            var scntDiv = $('.produto');
-            $.ajax({
-            url: '/orcamento/cadastrar/',
-            data: $('.needs-validation').serialize(),
-            type: 'POST',
-            success: function(response) {
-              console.log(response);
-            },
-            error: function(error) {
-                console.log(error);
-            }
-          });
-                
-			        return false;
-			    });
-			    });
-      $("#formprod").blur(function(){
-            //declaro uma var para somar o total
-            var total = 0;
-            //faço um foreach percorrendo todos os inputs com a class soma e faço a soma na var criada acima
-            $(".soma").each(function(){
-                total = total + Number($(this).val());  
-            });
-            //mostro o total no input Sub Total
-            $("#total").val(total);
-        });
-      
-			</script>
 {% endblock %}
