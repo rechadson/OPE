@@ -21,7 +21,7 @@ success: function(response) {
     carrinhos.each(function(){
         var carrinhoAtual = $(this);
         var valorItem = carrinhoAtual.find('.precoprod');
-        var resultado = 0;
+        var resultado = 0.0;
 
         valorItem.each(function(){
             var tdAtual = $(this);
@@ -44,7 +44,7 @@ error: function(error) {
 		carrinhos.each(function(){
 			var carrinhoAtual = $(this);
 			var valorItem = carrinhoAtual.find('.precoprod');
-			var resultado = 0;
+			var resultado = 0.0;
 	
 			valorItem.each(function(){
 				var tdAtual = $(this);

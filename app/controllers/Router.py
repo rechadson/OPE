@@ -191,11 +191,10 @@ def Cadastrar_Orcamento():
     
     if request.method == 'POST':
         formCPF= str(request.form['cpf_cliente'])
-        
+        formnomeProd = str(request.form['nome_Produto'])
         print(formCPF)
-        produtos = tables.Produtos.getAllProduto()
-        return jsonify({"nome":produto.nome,"preco":produto.preco,"fornecedor":produto.fornecedor_id})
-        tables.Fornecedor.insertFornecedor(formNome,formEmail,formCnpj)
+        return redirect(url_for('Orcamento'))
+        
         
         
         
