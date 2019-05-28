@@ -9,15 +9,14 @@ type: 'POST',
 success: function(response) {
   $('<li class="list-group-item d-flex justify-content-between lh-condensed">'+
 '<div>'+
-'<h6 class="my-0">'+response.nome+'</h6>'+
-'<small class="text-muted" name="nome_Produto">'+response.nome+'</small>'+
+'<textarea class="nomeproduto form-control" name="nomeProduto" id="nomeproduto" rows="1" readonly="readonly">'+response.nome+'</textarea>'+
 '</div>'+
 '<span class="precoprod">'+response.preco+'</span>'+
 '<a class="btn btn-danger" href="javascript:void(0)" id="remInput">'+
 				'<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> '+
 				'Remover produto'+
 	'</a>'+'</li>').appendTo(scntDiv);
-	
+		
     carrinhos.each(function(){
         var carrinhoAtual = $(this);
         var valorItem = carrinhoAtual.find('.precoprod');
@@ -59,18 +58,30 @@ error: function(error) {
 	});
 });
 $(document).on('click', '#gerar', function () {
-var scntDiv = $('.produto');
-$.ajax({
-url: '/orcamento/cadastrar/',
-data: $('.needs-validation').serialize(),
-type: 'POST',
-success: function(response) {
-  console.log("teste");
-  
-},
-error: function(error) {
-	console.log(error);
-}
+var cont = 0;
+$('.needs-validation .nomeproduto').each(function(){
+			var cpf = $('CPF').val();
+			var nomeproduto = $(this).text();
+			cont+=1
+			console.log(nomeproduto);
+	$.ajax({
+		url: '/orcamento/cadastrar/',
+		data: $('.needs-validation').serialize(),
+		type: 'POST',
+		success: function(response) {
+			
+			console.log(this);
+			
+		},
+		error: function(error) {
+			console.log(error);
+		}
+		});
+		$(this).parents('li').remove();
+		$('#total').text("0");
+			
+		
+		
 });
 	
 		return false;
