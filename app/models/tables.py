@@ -1,6 +1,7 @@
 from app import db
 from datetime import datetime
 
+
 class Produtos(db.Model):
     __tablename__ = "Produtos"
     id = db.Column(db.Integer, primary_key=True)
@@ -20,7 +21,7 @@ class Produtos(db.Model):
 
     def getAllProduto():
         produto = Produtos.query.all()
-        print(produto)
+       
         return produto
 
     def setProduto(nome,preco,fornecedor_id):
@@ -79,17 +80,24 @@ class Orcamento(db.Model):
     __tablename__ = "Orcamento"
     id = db.Column(db.Integer, primary_key=True)
     preco = db.Column(db.Float(120), nullable=False)
-    data = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
     cliente_cpf = db.Column(db.Integer,db.ForeignKey('Cliente.CPF'))
     cliente = db.relationship('Cliente',foreign_keys=cliente_cpf)
 
-    def __init__(self,cliente_cpf,preco,data):
+    def __init__(self,preco,cliente_cpf):
         self.preco = preco
-        self.data = data
+        
         self.cliente_cpf = cliente_cpf
-
-    def insertOrcamento(preco,data,cliente_cpf):
-        inserir = Orcamento(preco,data,cliente_cpf)
+        
+    def getOrcamento(id):
+        orcamento = Orcamento.query.filter_by(id = id).all()
+        return Orcamento
+    def getUltimoOrcamento():
+        orcamento = Orcamento.query.all()
+        print(orcamento)
+        return orcamento[-1].id
+    def insertOrcamento(preco,cliente_cpf):
+        inserir = Orcamento(preco,cliente_cpf)
         db.session.add(inserir)
         db.session.commit()
 

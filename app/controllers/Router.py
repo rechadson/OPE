@@ -2,6 +2,7 @@
 from app import app,db
 from flask import render_template, redirect, url_for, flash,session,request,jsonify
 from app.models import forms, tables
+from datetime import *
 
 
 
@@ -11,7 +12,7 @@ def login(user,inputPassword):
     
     form = forms.LoginForm()
     if form.validate_on_submit(): 
-        print(form.username.data)
+        
         formLogin  = str(form.username.data)
         formSenha = str(form.password.data)
         
@@ -49,7 +50,7 @@ def AdicionarProduto():
     
     for produto in produtos:
         if produto.nome == prod:
-            print(prod)
+           
             return jsonify({"nome":produto.nome,"preco":produto.preco,"fornecedor":produto.fornecedor_id})
     
 @app.route("/fornecedor/cadastrar/", methods=["GET","POST"])
@@ -188,16 +189,22 @@ def atualizar_produto(nome):
 
 @app.route("/orcamento/cadastrar/", methods=["GET","POST"])
 def Cadastrar_Orcamento():
-    
     if request.method == 'POST':
-        formCPF= str(request.form['cpf_cliente'])
+       
+        cpf= str(request.form['cpf_cliente'])
+        nome = str(request.form.get('nomeProduto'))
+        data = datetime.now()
+        preco = float(request.form.get('total'))
+        if preco != 0:
+
+            tables.Orcamento.insertOrcamento(preco,cpf)
+        idorcamento = tables.Orcamento.getUltimoOrcamento()
         
-        print(formCPF)
-        produtos = tables.Produtos.getAllProduto()
-        return jsonify({"nome":produto.nome,"preco":produto.preco,"fornecedor":produto.fornecedor_id})
-        tables.Fornecedor.insertFornecedor(formNome,formEmail,formCnpj)
+        print(idorcamento)
+        return redirect(url_for('Orcamento'))
         
         
         
-    return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=True) 
+        
+    return render_template('Orcamentoteste.html') 
 
