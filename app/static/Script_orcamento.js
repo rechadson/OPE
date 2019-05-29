@@ -9,7 +9,7 @@ type: 'POST',
 success: function(response) {
   $('<li class="list-group-item d-flex justify-content-between lh-condensed">'+
 '<div>'+
-'<h6 class="my-0">'+response.nome+'</h6>'+
+'<h6 class="my-0" name="nome_produto">'+response.nome+'</h6>'+
 '<small class="text-muted" name="nome_Produto">'+response.nome+'</small>'+
 '</div>'+
 '<span class="precoprod">'+response.preco+'</span>'+
