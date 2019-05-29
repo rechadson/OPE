@@ -2,7 +2,7 @@
 from app import app,db
 from flask import render_template, redirect, url_for, flash,session,request,jsonify
 from app.models import forms, tables
-
+import sqlite3
 
 
 @app.route("/<user><inputPassword>", methods=["POST"])
@@ -191,14 +191,24 @@ def Cadastrar_Orcamento():
     
     if request.method == 'POST':
         formCPF= str(request.form['cpf_cliente'])
-        
+        nomedoprod = request.args.get('nome_produto')
         print(formCPF)
+        print(nomedoprod)
         produtos = tables.Produtos.getAllProduto()
-        return jsonify({"nome":produto.nome,"preco":produto.preco,"fornecedor":produto.fornecedor_id})
-        tables.Fornecedor.insertFornecedor(formNome,formEmail,formCnpj)
+        return redirect(url_for('Cadastrar_Orcamento'))
         
         
         
-    return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=True) 
+    return redirect(url_for('Cadastrar_Orcamento')) 
 
-@app.errorhandler()
+@app.route("/cart")
+def cart():
+    with sqlite3.connect('storage.db') as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM Produtos")
+        products = cur.fetchall()
+    totalPrice = 0
+    for row in products:
+        totalPrice += row[2]
+    return render_template("cart.html", products = products,totalPrice=totalPrice)
+
