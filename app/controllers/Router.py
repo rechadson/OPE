@@ -41,12 +41,11 @@ def index(user):
 @app.route("/orcamento/", methods=["GET","POST"])
 def Orcamento():
     
-    return render_template('Orcamentoteste.html',produtos = tables.Produtos.getAllProduto())
+    return render_template('orcamento.html',produtos = tables.Produtos.getAllProduto())
 @app.route("/adicionar/produto/", methods=["GET","POST"])
 def AdicionarProduto():
     produtos = tables.Produtos.getAllProduto()
     prod =  str(request.form['prod'])
-    
     for produto in produtos:
         if produto.nome == prod:
             print(prod)
@@ -190,7 +189,7 @@ def atualizar_produto(nome):
 def Cadastrar_Orcamento():
     
     if request.method == 'POST':
-        formCPF= str(request.form['cpf_cliente'])
+        formCPF= str(request.args.get('cpf_cliente'))
         nomedoprod = request.args.get('nome_produto')
         print(formCPF)
         print(nomedoprod)
@@ -200,15 +199,4 @@ def Cadastrar_Orcamento():
         
         
     return redirect(url_for('Cadastrar_Orcamento')) 
-
-@app.route("/cart")
-def cart():
-    with sqlite3.connect('storage.db') as conn:
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM Produtos")
-        products = cur.fetchall()
-    totalPrice = 0
-    for row in products:
-        totalPrice += row[2]
-    return render_template("cart.html", products = products,totalPrice=totalPrice)
 

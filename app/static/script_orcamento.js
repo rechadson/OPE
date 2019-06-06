@@ -9,8 +9,8 @@ type: 'POST',
 success: function(response) {
   $('<li class="list-group-item d-flex justify-content-between lh-condensed">'+
 '<div>'+
-'<h6 class="my-0" name="nome_produto">'+response.nome+'</h6>'+
-'<small class="text-muted" name="nome_Produto">'+response.nome+'</small>'+
+'<h6 class="my-0">'+response.nome+'</h6>'+
+'<small class="text-muted" name="nome_Produto" id="nome_Produto">'+response.nome+'</small>'+
 '</div>'+
 '<span class="precoprod">'+response.preco+'</span>'+
 '<a class="btn btn-danger" href="javascript:void(0)" id="remInput">'+
@@ -38,7 +38,7 @@ error: function(error) {
 }
 });
 		return false;
-	});
+});
 	$(document).on('click', '#remInput', function () {
 		$(this).parents('li').remove();
 		carrinhos.each(function(){
@@ -60,9 +60,10 @@ error: function(error) {
 });
 $(document).on('click', '#gerar', function () {
 var scntDiv = $('.produto');
+$('#nome_Produto').each(function(){
 $.ajax({
 url: '/orcamento/cadastrar/',
-data: $('.needs-validation').serialize(),
+data: $('.container').serialize(),
 type: 'POST',
 success: function(response) {
   console.log("teste");
@@ -74,5 +75,6 @@ error: function(error) {
 });
 
 		return false;
+});
 });
 
