@@ -10,7 +10,7 @@ success: function(response) {
   $('<li class="list-group-item d-flex justify-content-between lh-condensed">'+
 '<div>'+
 '<h6 class="my-0">'+response.nome+'</h6>'+
-'<small class="text-muted" name="nome_Produto" id="nome_Produto">'+response.nome+'</small>'+
+'<small class="nomeproduto" name="nome_Produto" id="nome_Produto">'+response.nome+'</small>'+
 '</div>'+
 '<span class="precoprod">'+response.preco+'</span>'+
 '<a class="btn btn-danger" href="javascript:void(0)" id="remInput">'+
@@ -58,11 +58,10 @@ error: function(error) {
 		return false;
 	});
 	$(document).on('click', '#gerar', function () {
-		var cont = 0;
+		
 		$('.needs-validation .nomeproduto').each(function(){
 					var cpf = $('CPF').val();
 					var nomeproduto = $(this).text();
-					cont+=1
 					console.log(nomeproduto);
 			$.ajax({
 				url: '/orcamento/cadastrar/',
