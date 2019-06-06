@@ -57,24 +57,33 @@ error: function(error) {
 		});
 		return false;
 	});
-});
-$(document).on('click', '#gerar', function () {
-var scntDiv = $('.produto');
-$('#nome_Produto').each(function(){
-$.ajax({
-url: '/orcamento/cadastrar/',
-data: $('.container').serialize(),
-type: 'POST',
-success: function(response) {
-  console.log("teste");
-
-},
-error: function(error) {
-	console.log(error);
-}
-});
-
+	$(document).on('click', '#gerar', function () {
+		var cont = 0;
+		$('.needs-validation .nomeproduto').each(function(){
+					var cpf = $('CPF').val();
+					var nomeproduto = $(this).text();
+					cont+=1
+					console.log(nomeproduto);
+			$.ajax({
+				url: '/orcamento/cadastrar/',
+				data: $('.needs-validation').serialize(),
+				type: 'POST',
+				success: function(response) {
+					
+					console.log(this);
+					
+				},
+				error: function(error) {
+					console.log(error);
+				}
+				});
+				$(this).parents('li').remove();
+				$('#total').text("0");
+		});		
+				
 		return false;
 });
+	return false;
 });
+
 
