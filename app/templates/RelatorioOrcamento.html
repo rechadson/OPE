@@ -1,0 +1,33 @@
+{% extends "baseNavbar.html" %}
+
+{% block content %}
+<head>
+        <title>Relatório de Orçamentos</title>
+  </head>
+<div class="container  text-center">
+        <h1> Relatório de Orçamentos </h1>
+
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr class="bg-danger">
+            <td><b>CPF do Cliente</b></td>
+            <td><b>Total</b></td>
+        </tr>
+    </thead>
+    {% for orcament in orcamentos %}
+    <tr>
+        <td>{{ orcamentos.cliente_cpf }}</td>
+        <td>{{ orcamentos.preco }}</td>
+
+    </tr>
+    {% endfor %}
+</table>
+      <a href="#" class="btn btn-danger btn-lg btn-block" role="button" aria-pressed="true">Enviar por Email</a>
+
+
+
+
+
+
+{% endblock %}
+</div>

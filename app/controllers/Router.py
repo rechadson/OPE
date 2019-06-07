@@ -200,3 +200,14 @@ def Cadastrar_Orcamento():
         
     return redirect(url_for('Cadastrar_Orcamento')) 
 
+@app.route("/Relatorio/Orcamento/")
+def RelatorioOrcamento():
+   
+    return render_template("RelatorioOrcamento.html")
+
+
+@app.route("/Relatorio/Pedidos/")
+def RelatorioPedidos():
+   
+    return render_template("RelatorioPedidos.html")
+
