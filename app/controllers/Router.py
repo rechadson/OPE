@@ -2,6 +2,7 @@
 from app import app,db
 from flask import render_template, redirect, url_for, flash,session,request,jsonify
 from app.models import forms, tables
+from datetime import datetime
 import sqlite3
 
 
@@ -48,7 +49,6 @@ def AdicionarProduto():
     prod =  str(request.form['prod'])
     for produto in produtos:
         if produto.nome == prod:
-            print(prod)
             return jsonify({"nome":produto.nome,"preco":produto.preco,"fornecedor":produto.fornecedor_id})
     
 @app.route("/fornecedor/cadastrar/", methods=["GET","POST"])
@@ -187,16 +187,25 @@ def atualizar_produto(nome):
 
 @app.route("/orcamento/cadastrar/", methods=["GET","POST"])
 def Cadastrar_Orcamento():
-    
     if request.method == 'POST':
-        formCPF= str(request.args.get('cpf_cliente'))
-        nomedoprod = request.args.get('nome_produto')
-        print(formCPF)
-        print(nomedoprod)
-        produtos = tables.Produtos.getAllProduto()
-        return redirect(url_for('Cadastrar_Orcamento'))
+        dados = request.get_json()
+        cpf = dados["CPF"]
+        total = dados["Total"]
+        data = datetime.now()
+        codigoGerado = tables.Orcamento.insertOrcamento(total,cpf,data)
+        if(codigoGerado!=""):
+            condId = int(codigoGerado)
+            
+            for produto in dados["nomeProduto"]:
+                print(produto)
+                idProduto = tables.Produtos.getProduto(produto)
+                for produto in idProduto:
+                    prodid = int(produto.id)
+                    tables.Orcamento_Produto.insertOrcamentoProduto(condId,prodid)
+        
+            return jsonify({"Resultado":"Susess"})
+    
         
         
-        
-    return redirect(url_for('Cadastrar_Orcamento')) 
+    return jsonify({"Resultado":"Error"}) 
 

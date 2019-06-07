@@ -10,7 +10,7 @@ success: function(response) {
   $('<li class="list-group-item d-flex justify-content-between lh-condensed">'+
 '<div>'+
 '<h6 class="my-0">'+response.nome+'</h6>'+
-'<small class="nomeproduto" name="nome_Produto" id="nome_Produto">'+response.nome+'</small>'+
+'<small class="nomeProduto" name="nome_Produto" id="nome_Produto">'+response.nome+'</small>'+
 '</div>'+
 '<span class="precoprod">'+response.preco+'</span>'+
 '<a class="btn btn-danger" href="javascript:void(0)" id="remInput">'+
@@ -58,27 +58,48 @@ error: function(error) {
 		return false;
 	});
 	$(document).on('click', '#gerar', function () {
+		var json = {};
+		json["CPF"]=$('#CPF').val();
 		
-		$('.needs-validation .nomeproduto').each(function(){
-					var cpf = $('CPF').val();
-					var nomeproduto = $(this).text();
-					console.log(nomeproduto);
-			$.ajax({
-				url: '/orcamento/cadastrar/',
-				data: $('.needs-validation').serialize(),
-				type: 'POST',
-				success: function(response) {
-					
-					console.log(this);
-					
-				},
-				error: function(error) {
-					console.log(error);
-				}
+		json["nomeProduto"] = ListarProdutos();
+		json["Total"]=$('#total').text();
+		function ListarProdutos(){
+            console.log('ConvertFormToJSON invoked!');
+			var produto= Array();
+			var produtos = $('#cart');
+			console.log(produtos);
+            produtos.each(function(){
+				var nomePrd = $(this).find('.nomeProduto')
+				console.log(nomePrd);
+				nomePrd.each(function(){
+					produto.push($(this).text())
+					console.log(produto);
 				});
-				$(this).parents('li').remove();
-				$('#total').text("0");
-		});		
+			});
+			return produto;
+            
+            
+		}	
+		console.log(json);
+		$.ajax({
+			url: '/orcamento/cadastrar/',
+			type: 'POST',
+			dataType: 'json',
+			data: JSON.stringify(json),
+            contentType: "application/json; charset=utf-8",
+			success: function(response) {
+				if(response.Resultado == "Susess")
+				{
+						$('.produto > *').remove();
+						$('#total').text("R$ 0");
+						alert('Orçamento Gerado com Sucesso')
+				}
+				
+			},
+			error: function(error) {
+				console.log(error);
+			}
+			});	
 				
 		return false;
 });

@@ -4,23 +4,25 @@
 {% endblock %}
 {% block content %}
 <div class="row">
-  <div class="col-sm">col-sm
+  <div class="col-sm col-md-7">
+  <div class="col-sm col-md-10">
   <h4 class="mb-3">Produtos</h4>
   <form class="needs-validation" novalidate id="formprod">
-    <label class="mr-sm-2 sr-only" for="inlineFormCustomSelect">Preferência</label>
-    <select class="custom-select mr-sm-2" id="inlineFormCustomSelect" name="prod">
-      <option selected>Escolher...</option>
-      {% for Produto in produtos %}
-      <option>{{ Produto.nome }}</option>
-      {% endfor %}
-    </select>
-    <button class="btn btn-primary" type="button"  id="addInput">Adicionar</button>
+  <label class="mr-sm-2 sr-only" for="inlineFormCustomSelect">Preferência</label>
+              <select class="custom-select mr-sm-2" id="inlineFormCustomSelect" name="prod">
+                <option selected>Escolher...</option>
+                {% for Produto in produtos %}
+                <option>{{ Produto.nome }}</option>
+                {% endfor %}
+              </select>
+              <button class="btn btn-primary" type="button"  id="addInput">Adicionar</button>
   </form>
-</div>
-
-  <div class="col-sm">col-sm
-  <form class="needs-validation" novalidate>
-  <div class="container">
+  </div>
+  </div>
+  
+  <div class="container col-md-5">
+  <div class="container col-md-10">
+  <form class="needs-validation" novalidate id="cart">
   <h4 class="d-flex justify-content-between align-items-center mb-3">
         <span class="text-muted">Itens do Orçamento</span>
         <span class="badge badge-secondary badge-pill"></span>
@@ -31,7 +33,7 @@
       </div> 
         <li class="list-group-item d-flex justify-content-between">
           <span>Total (R$)</span>
-          <textarea id="total" name="total" class="total">$0</textarea>
+          <small id="total" name="total" class="total">R$0</small>
         </li>
       </ul>
       <div>
@@ -45,7 +47,8 @@
           </div>
         </div>
   </div>
-</form>
+  </form>
+  </div>
   </div>
 </div>
 {% endblock %}

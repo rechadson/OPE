@@ -80,26 +80,26 @@ class Orcamento(db.Model):
     __tablename__ = "Orcamento"
     id = db.Column(db.Integer, primary_key=True)
     preco = db.Column(db.Float(120), nullable=False)
-    
+    data = db.Column(db.DateTime)
     cliente_cpf = db.Column(db.Integer,db.ForeignKey('Cliente.CPF'))
     cliente = db.relationship('Cliente',foreign_keys=cliente_cpf)
 
-    def __init__(self,preco,cliente_cpf):
+    def __init__(self,preco,cliente_cpf,data):
         self.preco = preco
-        
         self.cliente_cpf = cliente_cpf
-        
+        self.data = data
     def getOrcamento(id):
         orcamento = Orcamento.query.filter_by(id = id).all()
         return Orcamento
     def getUltimoOrcamento():
         orcamento = Orcamento.query.all()
-        print(orcamento)
         return orcamento[-1].id
-    def insertOrcamento(preco,cliente_cpf):
-        inserir = Orcamento(preco,cliente_cpf)
+    def insertOrcamento(preco,cliente_cpf,data):
+        inserir = Orcamento(preco,cliente_cpf,data)
         db.session.add(inserir)
         db.session.commit()
+        codigogerado = Orcamento.getUltimoOrcamento()
+        return codigogerado
 
 class Orcamento_Produto(db.Model):
     __tablename__ = "Orcamento_Produto"
