@@ -64,8 +64,7 @@ error: function(error) {
 		json["nomeProduto"] = ListarProdutos();
 		json["Total"]=$('#total').text();
 		function ListarProdutos(){
-            console.log('ConvertFormToJSON invoked!');
-			var produto= Array();
+            var produto= Array();
 			var produtos = $('#cart');
 			console.log(produtos);
             produtos.each(function(){
@@ -92,7 +91,14 @@ error: function(error) {
 				{
 						$('.produto > *').remove();
 						$('#total').text("R$ 0");
+						window.location.replace("../Pedido/"+response.codigoOrcamento);
 						alert('Orçamento Gerado com Sucesso')
+						
+				}
+				if(response.Resultado == "Cliente")
+				{
+					window.location.replace("../cliente/cadastrar/");
+					alert('Cliente não cadastrado')
 				}
 				
 			},

@@ -192,19 +192,23 @@ def Cadastrar_Orcamento():
         cpf = dados["CPF"]
         total = dados["Total"]
         data = datetime.now()
-        codigoGerado = tables.Orcamento.insertOrcamento(total,cpf,data)
-        if(codigoGerado!=""):
-            condId = int(codigoGerado)
-            
-            for produto in dados["nomeProduto"]:
-                print(produto)
-                idProduto = tables.Produtos.getProduto(produto)
-                for produto in idProduto:
-                    prodid = int(produto.id)
-                    tables.Orcamento_Produto.insertOrcamentoProduto(condId,prodid)
+        cliente=tables.Cliente.getCliente(cpf)
         
-            return jsonify({"Resultado":"Susess"})
-    
+        if (cliente):
+            print(cliente)
+            codigoGerado = tables.Orcamento.insertOrcamento(total,cpf,data)
+            if(codigoGerado!=""):
+                condId = int(codigoGerado)
+                
+                for produto in dados["nomeProduto"]:
+                    print(produto)
+                    idProduto = tables.Produtos.getProduto(produto)
+                    for produto in idProduto:
+                        prodid = int(produto.id)
+                        tables.Orcamento_Produto.insertOrcamentoProduto(condId,prodid)
+            
+                return jsonify({"Resultado":"Susess","codigoOrcamento":codigoGerado})
+        return jsonify({"Resultado":"Cliente"})
         
         
     return jsonify({"Resultado":"Error"}) 
@@ -220,3 +224,34 @@ def RelatorioPedidos():
    
     return render_template("RelatorioPedidos.html")
 
+@app.route("/Pedido/<codigoOrcamento>", methods=["GET","POST"])
+@app.route("/Pedido/", methods=["GET","POST"],defaults={"codigoOrcamento":None})
+
+def Pedido(codigoOrcamento):
+    print(codigoOrcamento)
+    orcamento = tables.Orcamento.getOrcamento(codigoOrcamento)
+        
+    if codigoOrcamento:
+        if orcamento:
+            produtos = {}
+            codProduto = tables.Orcamento_Produto.getOrcamentoProduto(codigoOrcamento)
+            for cod in codProduto:
+                produt=tables.Produtos.getProdutoID(cod.Produto_id)
+                for prodnome in produt:
+                    produtos[prodnome.nome]=[prodnome.nome,prodnome.preco]
+            
+            for produts in produtos:
+                print(produts)
+                
+            for cpforcamento in orcamento:
+                cpf = cpforcamento.cliente_cpf
+            cliente=tables.Cliente.getCliente(cpf)
+            if cliente:
+                return render_template("Pedido.html",cart=produtos,client=cliente,orcamento=orcamento,create=False,codigoOrcamento=codigoOrcamento)
+        return redirect(url_for('Orcamento'))
+    return render_template("Pedido.html",create=True)   
+
+@app.route("/Pedido/cadastrar/", methods=["GET","POST"])
+def CadastrarPedido():
+
+    return render_template("Pedido.html")
