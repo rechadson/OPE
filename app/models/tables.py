@@ -1,34 +1,44 @@
 from app import db
 from datetime import datetime
-
+import sqlite3
 
 class Produtos(db.Model):
     __tablename__ = "Produtos"
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(80), nullable=False)
     preco = db.Column(db.Float(120), nullable=False)
-    fornecedor_id = db.Column(db.Integer,db.ForeignKey('Fornecedor.id'))
-    fornecedor = db.relationship('Fornecedor',foreign_keys=fornecedor_id)
-    def __init__(self,nome,preco,fornecedor_id):
+    fornecedor_cnpj = db.Column(db.String,db.ForeignKey('Fornecedor.cnpj'))
+    fornecedor = db.relationship('Fornecedor',foreign_keys=fornecedor_cnpj)
+    def __init__(self,nome,preco,fornecedor_cnpj):
         self.nome = nome
         self.preco = preco
-        self.fornecedor_id = fornecedor_id
+        self.fornecedor_cnpj = fornecedor_cnpj
 
-    def insertProduto(nome,preco,fornecedor_id):
-        inserir = Produtos(nome,preco,fornecedor_id)
-        db.session.add(inserir)
-        db.session.commit()
-
+    def insertProduto(nome,preco,fornecedor_cnpj):
+        print(fornecedor_cnpj)
+        fornecedor = Fornecedor.query.filter_by(cnpj = fornecedor_cnpj).all()
+        if fornecedor:
+            inserir = Produtos(nome,preco,fornecedor_cnpj)
+            db.session.add(inserir)
+            db.session.commit()
+            return True
+        return False
     def getAllProduto():
         produto = Produtos.query.all()
        
         return produto
-
-    def setProduto(nome,preco,fornecedor_id):
+    def deleteProduto(id):
+        print("delete")
+        deletar = Produtos(id)
+        print(deletar)
+        db.session.delete(deletar)
+        db.session.commit()
+        print('Registro excluido com sucesso.')
+    def setProduto(nome,preco,fornecedor_cnpj):
         produto = Produtos.query.filter_by(nome = nome).first()
         produto.nome = nome
         produto.preco = preco
-        produto.fornecedor_id = fornecedor_id
+        produto.fornecedor_cnpj = fornecedor_cnpj
         db.session.commit()
 
     def getProduto(nome):
@@ -84,7 +94,7 @@ class Orcamento(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     preco = db.Column(db.Float(120), nullable=False)
     data = db.Column(db.DateTime)
-    cliente_cpf = db.Column(db.Integer,db.ForeignKey('Cliente.CPF'))
+    cliente_cpf = db.Column(db.String,db.ForeignKey('Cliente.CPF'))
     cliente = db.relationship('Cliente',foreign_keys=cliente_cpf)
 
     def __init__(self,preco,cliente_cpf,data):
@@ -147,7 +157,7 @@ class Fornecedor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    cnpj = db.Column(db.Integer,unique=True, nullable=False)
+    cnpj = db.Column(db.String,unique=True, nullable=False)
 
     def __init__(self,nome,email,cnpj):
         self.nome = nome

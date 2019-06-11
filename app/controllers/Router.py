@@ -43,36 +43,44 @@ def index(user):
 def Orcamento():
     
     return render_template('orcamento.html',produtos = tables.Produtos.getAllProduto())
+
 @app.route("/adicionar/produto/", methods=["GET","POST"])
 def AdicionarProduto():
     produtos = tables.Produtos.getAllProduto()
     prod =  str(request.form['prod'])
     for produto in produtos:
         if produto.nome == prod:
-            return jsonify({"nome":produto.nome,"preco":produto.preco,"fornecedor":produto.fornecedor_id})
+            return jsonify({"nome":produto.nome,"preco":produto.preco,"fornecedor":produto.fornecedor_cnpj})
     
 @app.route("/fornecedor/cadastrar/", methods=["GET","POST"])
 def Cadastrar_fornecedor():
     form = forms.FornecedorForm()
+    print("foi")
     if form.validate_on_submit():
         formNome= str(form.fornecedor.data)
         formEmail = str(form.email.data)
-        formCnpj = int(form.cnpj.data)
-        tables.Fornecedor.insertFornecedor(formNome,formEmail,formCnpj)
+        formCnpj = str(form.cnpj.data)
+        try:
+            tables.Fornecedor.insertFornecedor(formNome,formEmail,formCnpj)
+        except:
+            flash('CNPJ Já cadastrado')
+            return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=True)
         return redirect(url_for('Cadastrar_fornecedor'))
-        
-        
+
     return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=True) 
 @app.route("/fornecedor/", methods=["GET","POST"])
 def Pesquisar_fornecedor():
     form = forms.FornecedorForm()
     
     if form.validate_on_submit():
-        formCnpj = int(form.cnpj.data)
-        fornecedore=tables.Fornecedor.getFornecedor(formCnpj)
+        formCnpj = str(form.cnpj.data)
+        try:
+            fornecedore=tables.Fornecedor.getFornecedor(formCnpj)
+        except:
+            flash('CNPJ não encontrado')
+            return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,fornecedores=[])
         if fornecedore:
-            return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,pesquisa=True,fornecedores=tables.Fornecedor.getFornecedor(formCnpj))
-        
+            return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,pesquisa=True,fornecedores=fornecedore)
         else:
             return redirect(url_for('Pesquisar_fornecedor'))
     return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,fornecedores=[])
@@ -85,13 +93,19 @@ def atualizar_fornecedor(cnpj):
         formCnpj = int(request.form['cnpj'])
         
         if form.validate_on_submit():
-            tables.Fornecedor.setFornecedor(formNome,formEmail,formCnpj)
+            try:
+                tables.Fornecedor.setFornecedor(formNome,formEmail,formCnpj)
+            except:
+                flash('Erro na atualização do fornecedor')
+                return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,pesquisa=True,atualizar=True,fornecedores=tables.Fornecedor.getFornecedor(cnpj))
             return redirect(url_for('Pesquisar_fornecedor'))
         else:
             return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,pesquisa=True,atualizar=True,fornecedores=tables.Fornecedor.getFornecedor(cnpj))
 
         
     return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,pesquisa=True,atualizar=True,fornecedores=tables.Fornecedor.getFornecedor(cnpj))
+###@app.route("/fornecedor/deletar/<cnpj>", methods=["GET","POST"])
+###def atualizar_fornecedor(cnpj):
 
 @app.route("/cliente/cadastrar/", methods=["GET","POST"])
 def Cadastrar_cliente():
@@ -101,7 +115,11 @@ def Cadastrar_cliente():
         formCpf = str(form.cpf.data)
         formTelefone = str(form.telefone.data)
         formEndereco = str(form.endereco.data)
-        tables.Cliente.insertCliente(formNome,formCpf,formTelefone,formEndereco)
+        try:
+            tables.Cliente.insertCliente(formNome,formCpf,formTelefone,formEndereco)
+        except:
+            flash('CPF já cadastrado')
+            return render_template("cliente.html", ClienteForm=form, cadastrar=True)
         return redirect(url_for('Cadastrar_cliente'))
 
     return render_template("cliente.html", ClienteForm=form, cadastrar=True )
@@ -114,10 +132,46 @@ def Cadastrar_produto():
         formNome= str(form.nome.data)
         formPreco = str(form.preco.data)
         formFornecedor = str(form.fornecedor.data)
-        tables.Produtos.insertProduto(formNome,formPreco,formFornecedor)
-        return redirect(url_for('Cadastrar_produto'))
+        try:
+            print("aqui foi")
+            print(formFornecedor)
+            if tables.Produtos.insertProduto(formNome,formPreco,formFornecedor):
+                flash("Produto cadastrado com Sucesso")
+                return redirect(url_for('Cadastrar_produto'))
+            flash('CNPJ do fornecedor não encontrado')
+            return render_template("produto.html", ProdutoForm=form, cadastrar=True )
+        except:
+            print("erro aqui")
+            flash('CNPJ do fornecedor não encontrado')
+            return render_template("produto.html", ProdutoForm=form, cadastrar=True )
+        
+        
 
     return render_template("produto.html", ProdutoForm=form, cadastrar=True )
+@app.route("/produto/deletar/<id>", methods=["GET","POST"])
+def DeletarProduto(id):
+    print("aqui foi")
+    with sqlite3.connect('storage.db') as conn:
+        try:
+            cur = conn.cursor()
+            print("iniciar o delete")
+            print(id)
+            cur.execute('DELETE FROM Produtos WHERE id = ?',(id, ))
+            conn.commit()
+            flash( "Produto deletado com Sucesso")
+            print("funcionol")
+            return redirect(url_for('Pesquisar_produto'))
+        except Error as e:
+            print(e)
+        except:
+            conn.rollback()
+            flash("Falha ao deletar Produto")
+            print("falha no delete")
+            return redirect(url_for('Pesquisar_produto'))
+    conn.close()
+    print("aqui deu ruim")
+    return redirect(url_for('Pesquisar_produto'))
+   
 
 @app.route("/produto/", methods=["GET","POST"])
 def Pesquisar_produto():
@@ -125,12 +179,18 @@ def Pesquisar_produto():
     
     if form.validate_on_submit():
         formNome = str(form.nome.data)
-        produt=tables.Produtos.getProduto(formNome)
-        if produt:
-            return render_template('produto.html',ProdutoForm=form,cadastrar=False,pesquisa=True,produtos=tables.Produtos.getProduto(formNome))
+        try:
+            produt=tables.Produtos.getProduto(formNome)
+            if produt:
+                return render_template('produto.html',ProdutoForm=form,cadastrar=False,pesquisa=True,produtos=tables.Produtos.getProduto(formNome))
         
-        else:
+            else:
+                flash('Produto não encontrado')
+                return redirect(url_for('Pesquisar_produto'))
+        except:
+            flash('Produto não encontrado')
             return redirect(url_for('Pesquisar_produto'))
+        
     return render_template('produto.html',ProdutoForm=form,cadastrar=False,produtos=tables.Produtos.getAllProduto())
 
 
@@ -168,8 +228,8 @@ def atualizar_cliente(cpf):
     return render_template('cliente.html',ClienteForm=form,cadastrar=False,pesquisa=True,atualizar=True,clientes=tables.Cliente.getCliente(cpf))
 
 
-@app.route("/produto/atualizar/<nome>", methods=["GET","POST"])
-def atualizar_produto(nome):
+@app.route("/produto/atualizar/<id>", methods=["GET","POST"])
+def atualizar_produto(id):
     form = forms.ProdutoForm(request.form)
     if request.method == 'POST':
         formNome= str(request.form['nome'])
@@ -228,7 +288,7 @@ def RelatorioPedidos():
 @app.route("/Pedido/", methods=["GET","POST"],defaults={"codigoOrcamento":None})
 
 def Pedido(codigoOrcamento):
-    print(codigoOrcamento)
+   
     orcamento = tables.Orcamento.getOrcamento(codigoOrcamento)
         
     if codigoOrcamento:

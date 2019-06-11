@@ -3,7 +3,7 @@ from wtforms import *
 from wtforms.validators import DataRequired
 
 class FornecedorForm(FlaskForm):
-    cnpj = IntegerField("cnpj",validators=[DataRequired()])
+    cnpj = StringField("cnpj",validators=[DataRequired()])
     fornecedor = StringField("fornecedor",validators=[DataRequired()])
     email = StringField("email",validators=[DataRequired()])
     
@@ -21,5 +21,5 @@ class ClienteForm(FlaskForm):
 class ProdutoForm(FlaskForm):
     nome = StringField("nome",validators=[DataRequired()])
     preco = StringField("preco",validators=[DataRequired()])
-    fornecedor = IntegerField("fornecedor_id",validators=[DataRequired()])
+    fornecedor = StringField("fornecedor_id",validators=[DataRequired()])
 

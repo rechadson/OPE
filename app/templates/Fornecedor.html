@@ -1,12 +1,19 @@
 {% extends "baseNavbar.html" %}
+
 {% block content %}
 {% if cadastrar %}
 <form  method = "POST">
-        
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <p class="alert alert-danger">{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+    {% endwith %} 
     <div class="form-group">
         {{ FornecedorForm.csrf_token }} 
         <label for="CNPJ">CNPJ</label>
-        {{FornecedorForm.cnpj(id="CNPJ",class="form-control", placeholder="CNPJ da empresa")}}
+        {{FornecedorForm.cnpj(id="cnpj",class="form-control", placeholder="CNPJ da empresa")}}
     </div>
     <div class="form-group">
         <label for="nome">Nome do fornecedor</label>
@@ -17,13 +24,7 @@
         <label for="Email1">Endereço de email</label>
         {{ FornecedorForm.email(type="email",class="form-control", id="Email1", placeholder="Seu email") }}
     </div>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        {% for message in messages %}
-          <p class="alert alert-danger">{{ message }}</p>
-        {% endfor %}
-        {% endif %}
-      {% endwith %}
+
      <button type="submit" class="btn btn-primary" action="/fornecedor/cadastrar/">Enviar</button>
   </form>
   
@@ -32,10 +33,16 @@
   {{ FornecedorForm.csrf_token }} 
   {% if pesquisa %} 
     {%for fon in fornecedores%}
-
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <p class="alert alert-danger">{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+    {% endwith %} 
     <div class="form-group">
       <label for="cnpj">CNPJ:</label>
-      <input type="text" class="form-control" id="cnpj" name="cnpj"value="{{fon.cnpj}}">
+      <input type="text" class="form-control" id="cnpj" name="cnpj" value="{{fon.cnpj}}" readonly="readonly">
       
     </div>
     <div class="form-group">
@@ -57,7 +64,7 @@
     <div class="form-group">
       {{ FornecedorForm.csrf_token }} 
       <label for="CNPJ">CNPJ</label>
-      {{FornecedorForm.cnpj(id="CNPJ",class="form-control", placeholder="CNPJ da empresa")}}
+      {{FornecedorForm.cnpj(id="cnpj",class="form-control", placeholder="CNPJ da empresa")}}
       </div>
       <div class="form-group">
         {{ FornecedorForm.fornecedor(class="form-control", id="nome", placeholder="fornecedor",value="nome",style="display:none")}}
