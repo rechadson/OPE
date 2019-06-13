@@ -20,25 +20,29 @@
   </div>
   </div>
   
-  <div class="container col-md-5">
-  <div class="container col-md-10">
+  <div class="container col-md-5" >
+  
   <form class="needs-validation" novalidate id="cart">
   <h4 class="d-flex justify-content-between align-items-center mb-3">
         <span class="text-muted">Itens do Orçamento</span>
         <span class="badge badge-secondary badge-pill"></span>
       </h4>
-      <ul class="list-group mb-3">
-        <div class="produto">
-        
-      </div> 
+      
+        <ul class="list-group mb-3" >
+            <div data-spy="scroll" data-offset="10" class=" produto scrollbar" id="cart">
+
+            </div>
+        </ul>
+        <ul class="list-group mb-3"></ul>
         <li class="list-group-item d-flex justify-content-between">
           <span>Total (R$)</span>
           <small id="total" name="total" class="total">R$0</small>
         </li>
+     
       </ul>
       <div>
         <label for="primeiroNome">CPF</label>
-        <input type="text" class="form-control" id="cpf" name="cpf_cliente"placeholder="12345678900" value="" required>
+        <input type="text" class="form-control" id="cpf" name="cpf_cliente"placeholder="123.456.789-00" value="" required>
         
       </div>
         <div class="input-group">
@@ -48,7 +52,7 @@
         </div>
   </div>
   </form>
-  </div>
+  
   </div>
 </div>
 {% endblock %}

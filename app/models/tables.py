@@ -13,7 +13,18 @@ class Produtos(db.Model):
         self.nome = nome
         self.preco = preco
         self.fornecedor_cnpj = fornecedor_cnpj
-
+    def getProdutoname(nome):
+        produto = True
+        with sqlite3.connect('storage.db') as conn:
+            try:
+                cur = conn.cursor()
+                cur.execute('SELECT * FROM Produtos WHERE nome LIKE = %?%',(nome, ))
+                for linha in cursor.fetchall():
+                    print(linha)
+                conn.commit()
+            except:
+                conn.rollback()
+        return produto
     def insertProduto(nome,preco,fornecedor_cnpj):
         print(fornecedor_cnpj)
         fornecedor = Fornecedor.query.filter_by(cnpj = fornecedor_cnpj).all()
@@ -27,25 +38,23 @@ class Produtos(db.Model):
         produto = Produtos.query.all()
        
         return produto
-    def deleteProduto(id):
-        print("delete")
-        deletar = Produtos(id)
-        print(deletar)
-        db.session.delete(deletar)
-        db.session.commit()
-        print('Registro excluido com sucesso.')
+    
     def setProduto(nome,preco,fornecedor_cnpj):
         produto = Produtos.query.filter_by(nome = nome).first()
         produto.nome = nome
         produto.preco = preco
         produto.fornecedor_cnpj = fornecedor_cnpj
         db.session.commit()
-
+    def getProdutoByFornecedor(fornecedor_cnpj):
+        produto = Produtos.query.filter_by(fornecedor_cnpj = fornecedor_cnpj).all()
+        return produto
     def getProduto(nome):
         produto = Produtos.query.filter_by(nome = nome).all()
         return produto
     def getProdutoID(id):
+        
         produto = Produtos.query.filter_by(id = id).all()
+        print(produto)
         return produto
     
 
@@ -104,6 +113,9 @@ class Orcamento(db.Model):
     def getAllorcamento():
         orcamento = Orcamento.query.all()
         return orcamento
+    def getClienteOrcamento(cliente_cpf):
+        cliente=Orcamento.query.filter_by(cliente_cpf = cliente_cpf).all()
+        return cliente
     def getOrcamento(id):
         orcamento = Orcamento.query.filter_by(id = id).all()
         return orcamento
@@ -130,11 +142,15 @@ class Orcamento_Produto(db.Model):
         self.Produto_id = Produto_id
 
     def getOrcamentoProduto(orcamento_id):
-        produto = Orcamento_Produto.query.filter_by(orcamento_id = orcamento_id).all()
-        return produto
-
+        orcamento = Orcamento_Produto.query.filter_by(orcamento_id = orcamento_id).all()
+        return orcamento
+    def getOrcamentoByProduto(Produto_id):
+        print("chegou")
+        orcamento = Orcamento_Produto.query.filter_by(Produto_id = Produto_id).all()
+        return orcamento
     def insertOrcamentoProduto(orcamento_id,Produto_id):
         inserir = Orcamento_Produto(orcamento_id,Produto_id)
+        print(inserir)
         db.session.add(inserir)
         db.session.commit()
    
@@ -172,7 +188,9 @@ class Fornecedor(db.Model):
         return fornecedor
     
     def insertFornecedor(nome,email,cnpj):
+        print("tentando")
         inserir = Fornecedor(nome,email,cnpj)
+        print(inserir)
         db.session.add(inserir)
         db.session.commit()
         

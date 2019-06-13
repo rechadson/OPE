@@ -29,7 +29,8 @@
         <li class="list-group-item d-flex justify-content-between">
           <span>Total (R$)</span>
 
-          <strong>R${{orcamento.preco}}</strong>
+          <label for="dinheiro">R$</label>
+          <input type="text" id="dinheiro" name="dinheiro" class="dinheiro form-control" value = "R$ {{orcamento.preco}}" style="display:inline-block" />
         </li>
         {%endfor%}
         <li class="list-group-item d-flex justify-content-between">

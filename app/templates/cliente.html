@@ -15,7 +15,7 @@
     <div class="form-group">
         {{ ClienteForm.csrf_token }} 
         <label for="cpf">CPF</label>
-        {{ ClienteForm.cpf(id="cpf",class="form-control", placeholder="12345678900")}}
+        {{ ClienteForm.cpf(id="cpf",class="form-control", placeholder="123.456.789-00")}}
     </div>
     <div class="form-group">
         <label for="nome">Nome do Cliente</label>
@@ -71,6 +71,7 @@
     
     
     <div class="form-group">
+    <button type="submit" class="btn btn-primary" formaction="/cliente/deletar/{{fon.CPF}}" style={% if pesquisa %} "display:Line"{%else%}"display:none"{%endif%}>Excluir Cliente</button>
     <button type="submit" class="btn btn-primary" formaction="/cliente/atualizar/{{fon.CPF}}" style={% if pesquisa %} "display:Line"{%else%}"display:none"{%endif%}>Atualizar Cliente</button>         
     </div>
     {%endfor%}

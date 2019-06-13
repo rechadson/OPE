@@ -57,10 +57,18 @@
     
     
     <div class="form-group">
-    <button type="submit" class="btn btn-primary" formaction="/fornecedor/atualizar/{{fon.cnpj}}" style={% if pesquisa %} "display:Line"{%else%}"display:none"{%endif%}>Atualizar Fornecedor</button>         
+    <button type="submit" class="btn btn-primary" formaction="/fornecedor/deletar/" style={% if pesquisa %} "display:Line"{%else%}"display:none"{%endif%}>Excluir Fornecedor</button>
+    <button type="submit" class="btn btn-primary" formaction="/fornecedor/atualizar/" style={% if pesquisa %} "display:Line"{%else%}"display:none"{%endif%}>Atualizar Fornecedor</button>         
     </div>
     {%endfor%}
     {%else%}
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <p class="alert alert-danger">{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+    {% endwith %}  
     <div class="form-group">
       {{ FornecedorForm.csrf_token }} 
       <label for="CNPJ">CNPJ</label>

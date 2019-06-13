@@ -4,6 +4,7 @@ from flask import render_template, redirect, url_for, flash,session,request,json
 from app.models import forms, tables
 from datetime import datetime
 import sqlite3
+import locale
 
 
 @app.route("/<user><inputPassword>", methods=["POST"])
@@ -32,10 +33,10 @@ def login(user,inputPassword):
         
     return render_template('login.html',LoginForm=form)
 
-@app.route("/home/<user>", methods=["GET", "POST"])
-def index(user):
+@app.route("/home/", methods=["GET", "POST"])
+def index():
     valid = tables.Usuario.getUser(user)
-    if valid:
+    if session:
         return render_template('index.html')
     else:
         return redirect(url_for('login'))
@@ -50,7 +51,9 @@ def AdicionarProduto():
     prod =  str(request.form['prod'])
     for produto in produtos:
         if produto.nome == prod:
-            return jsonify({"nome":produto.nome,"preco":produto.preco,"fornecedor":produto.fornecedor_cnpj})
+            locale.setlocale(locale.LC_ALL, 'pt_BR')
+            preco=locale.currency(produto.preco, grouping=True) 
+            return jsonify({"nome":produto.nome,"preco":preco,"fornecedor":produto.fornecedor_cnpj,"id":produto.id})
     
 @app.route("/fornecedor/cadastrar/", methods=["GET","POST"])
 def Cadastrar_fornecedor():
@@ -61,6 +64,7 @@ def Cadastrar_fornecedor():
         formEmail = str(form.email.data)
         formCnpj = str(form.cnpj.data)
         try:
+            print(formCnpj)
             tables.Fornecedor.insertFornecedor(formNome,formEmail,formCnpj)
         except:
             flash('CNPJ Já cadastrado')
@@ -84,28 +88,56 @@ def Pesquisar_fornecedor():
         else:
             return redirect(url_for('Pesquisar_fornecedor'))
     return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,fornecedores=[])
-@app.route("/fornecedor/atualizar/<cnpj>", methods=["GET","POST"])
-def atualizar_fornecedor(cnpj):
+@app.route("/fornecedor/atualizar/", methods=["GET","POST"])
+def atualizar_fornecedor():
     form = forms.FornecedorForm(request.form)
     if request.method == 'POST':
         formNome= str(request.form['fornecedor'])
         formEmail = str(request.form['email'])
-        formCnpj = int(request.form['cnpj'])
+        formCnpj = str(request.form['cnpj'])
         
         if form.validate_on_submit():
             try:
                 tables.Fornecedor.setFornecedor(formNome,formEmail,formCnpj)
+                
             except:
                 flash('Erro na atualização do fornecedor')
                 return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,pesquisa=True,atualizar=True,fornecedores=tables.Fornecedor.getFornecedor(cnpj))
+            flash('Fornecedor '+formNome+' foi atualizado com sucesso')
             return redirect(url_for('Pesquisar_fornecedor'))
         else:
             return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,pesquisa=True,atualizar=True,fornecedores=tables.Fornecedor.getFornecedor(cnpj))
 
         
     return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=False,pesquisa=True,atualizar=True,fornecedores=tables.Fornecedor.getFornecedor(cnpj))
-###@app.route("/fornecedor/deletar/<cnpj>", methods=["GET","POST"])
-###def atualizar_fornecedor(cnpj):
+@app.route("/fornecedor/deletar/", methods=["GET","POST"])
+def deletar_fornecedor():
+    with sqlite3.connect('storage.db') as conn:
+        try:
+            form = forms.FornecedorForm(request.form)
+            cur = conn.cursor()
+            formCnpj = str(request.form['cnpj'])
+            formNome= str(request.form['fornecedor'])
+            print("iniciar o delete")
+            print(formCnpj)
+            produto = tables.Produtos.getProdutoByFornecedor(formCnpj)
+            if produto:
+                flash("Fornecedor "+formNome+" não pode ser deletado por existe Produto vinculado")
+                return redirect(url_for('Pesquisar_fornecedor'))
+            cur.execute('DELETE FROM Fornecedor WHERE cnpj = ?',(formCnpj, ))
+            conn.commit()
+            flash( "Fornecedor excluido com Sucesso")
+            print("funcionol")
+            return redirect(url_for('Pesquisar_fornecedor'))
+  
+        except:
+            conn.rollback()
+            flash("Falha ao Excluir Forncedor")
+            print("falha no delete")
+            return redirect(url_for('Pesquisar_fornecedor'))
+    conn.close()
+    print("aqui deu ruim")
+    return redirect(url_for('Pesquisar_fornecedor'))
 
 @app.route("/cliente/cadastrar/", methods=["GET","POST"])
 def Cadastrar_cliente():
@@ -123,8 +155,33 @@ def Cadastrar_cliente():
         return redirect(url_for('Cadastrar_cliente'))
 
     return render_template("cliente.html", ClienteForm=form, cadastrar=True )
-
-
+@app.route("/cliente/deletar/<cpf>", methods=["GET","POST"])
+def Deletar_cliente(cpf):
+    
+    with sqlite3.connect('storage.db') as conn:
+        try:
+            cur = conn.cursor()
+            print("iniciar o delete")
+            print(cpf)
+            OrcamentoCliente = tables.Orcamento.getClienteOrcamento(cpf)
+            if OrcamentoCliente:
+                flash("Cliente não pode ser deletado por existe orçamento vinculado")
+                return redirect(url_for('Cadastrar_cliente'))
+            cur.execute('DELETE FROM Cliente WHERE CPF = ?',(cpf, ))
+            conn.commit()
+            flash( "Cliente deletado com Sucesso")
+            print("funcionol")
+            return redirect(url_for('Pesquisar_cliente'))
+  
+        except:
+            conn.rollback()
+            flash("Falha ao deletar Cliente")
+            print("falha no delete")
+            return redirect(url_for('Pesquisar_cliente'))
+    conn.close()
+    print("aqui deu ruim")
+    return redirect(url_for('Cadastrar_cliente'))
+    
 @app.route("/produto/cadastrar/", methods=["GET","POST"])
 def Cadastrar_produto():
     form = forms.ProdutoForm()
@@ -132,10 +189,13 @@ def Cadastrar_produto():
         formNome= str(form.nome.data)
         formPreco = str(form.preco.data)
         formFornecedor = str(form.fornecedor.data)
+        preco=formPreco.replace(".","")
+        preco=preco.replace(",",".")
         try:
             print("aqui foi")
+            print(preco)
             print(formFornecedor)
-            if tables.Produtos.insertProduto(formNome,formPreco,formFornecedor):
+            if tables.Produtos.insertProduto(formNome,preco,formFornecedor):
                 flash("Produto cadastrado com Sucesso")
                 return redirect(url_for('Cadastrar_produto'))
             flash('CNPJ do fornecedor não encontrado')
@@ -154,15 +214,16 @@ def DeletarProduto(id):
     with sqlite3.connect('storage.db') as conn:
         try:
             cur = conn.cursor()
-            print("iniciar o delete")
-            print(id)
+            OrcamentoProduto = tables.Orcamento_Produto.getOrcamentoByProduto(id)
+            if OrcamentoProduto:
+                flash("Produto não pode ser deletado por existe orçamento vinculado")
+                return redirect(url_for('Pesquisar_produto'))
             cur.execute('DELETE FROM Produtos WHERE id = ?',(id, ))
             conn.commit()
             flash( "Produto deletado com Sucesso")
             print("funcionol")
             return redirect(url_for('Pesquisar_produto'))
-        except Error as e:
-            print(e)
+        
         except:
             conn.rollback()
             flash("Falha ao deletar Produto")
@@ -176,20 +237,29 @@ def DeletarProduto(id):
 @app.route("/produto/", methods=["GET","POST"])
 def Pesquisar_produto():
     form = forms.ProdutoForm()
-    
-    if form.validate_on_submit():
-        formNome = str(form.nome.data)
-        try:
-            produt=tables.Produtos.getProduto(formNome)
-            if produt:
-                return render_template('produto.html',ProdutoForm=form,cadastrar=False,pesquisa=True,produtos=tables.Produtos.getProduto(formNome))
-        
-            else:
+    with sqlite3.connect('storage.db') as conn:
+                
+        if form.validate_on_submit():
+            formNome = str(form.nome.data)
+            try:
+                print("aqui foi")
+                cur = conn.cursor()
+                cur.execute('SELECT * FROM Produtos WHERE nome LIKE "%?%"',(formNome, ))
+                
+                print(cur)
+                for linha in cur.fetchall():
+                    print(linha)
+                conn.commit()
+                produt=tables.Produtos.getProdutoname(formNome)
+                if produt:
+                    return render_template('produto.html',ProdutoForm=form,cadastrar=False,pesquisa=True,produtos=tables.Produtos.getProduto(formNome))
+            
+                else:
+                    flash('Produto não encontrado')
+                    return redirect(url_for('Pesquisar_produto'))
+            except:
                 flash('Produto não encontrado')
                 return redirect(url_for('Pesquisar_produto'))
-        except:
-            flash('Produto não encontrado')
-            return redirect(url_for('Pesquisar_produto'))
         
     return render_template('produto.html',ProdutoForm=form,cadastrar=False,produtos=tables.Produtos.getAllProduto())
 
@@ -249,28 +319,29 @@ def atualizar_produto(id):
 def Cadastrar_Orcamento():
     if request.method == 'POST':
         dados = request.get_json()
-        cpf = dados["CPF"]
+        cpf = dados["cpf"]
         total = dados["Total"]
         data = datetime.now()
-        cliente=tables.Cliente.getCliente(cpf)
-        
-        if (cliente):
-            print(cliente)
-            codigoGerado = tables.Orcamento.insertOrcamento(total,cpf,data)
-            if(codigoGerado!=""):
-                condId = int(codigoGerado)
+        try:
+            cliente=tables.Cliente.getCliente(cpf)
+            if (cliente):
+                print(cliente)
+                codigoGerado = tables.Orcamento.insertOrcamento(total,cpf,data)
+                if(codigoGerado!=""):
+                    condId = int(codigoGerado)
+                    
+                    for produto in dados["nomeProduto"]:
+                        print(produto)
+                        idProduto = tables.Produtos.getProdutoID(produto)
+                        print(idProduto)
+                        for produto in idProduto:
+                            prodid = int(produto.id)
+                            tables.Orcamento_Produto.insertOrcamentoProduto(condId,prodid)
                 
-                for produto in dados["nomeProduto"]:
-                    print(produto)
-                    idProduto = tables.Produtos.getProduto(produto)
-                    for produto in idProduto:
-                        prodid = int(produto.id)
-                        tables.Orcamento_Produto.insertOrcamentoProduto(condId,prodid)
-            
-                return jsonify({"Resultado":"Susess","codigoOrcamento":codigoGerado})
-        return jsonify({"Resultado":"Cliente"})
-        
-        
+                    return jsonify({"Resultado":"Susess","codigoOrcamento":codigoGerado})
+            return jsonify({"Resultado":"Cliente"})
+        except:
+            return jsonify({"Resultado":"Error"}) 
     return jsonify({"Resultado":"Error"}) 
 
 @app.route("/Relatorio/Orcamento/")

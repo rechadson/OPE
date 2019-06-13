@@ -1,4 +1,6 @@
 $(function () {
+	$('.dinheiro').mask('###.###.##0,00',{reverse: true});
+	$('#total').mask('###.###.##0,00',{reverse: true});
 	var scntDiv = $('.produto');
 	var carrinhos = $('.container');
 $(document).on('click', '#addInput', function () {
@@ -7,30 +9,35 @@ url: '/adicionar/produto/',
 data: $('#formprod').serialize(),
 type: 'POST',
 success: function(response) {
-  $('<li class="list-group-item d-flex justify-content-between lh-condensed">'+
-'<div>'+
+  $('<li class="list-group-item">'+
+'<div class="p-2">'+
 '<h6 class="my-0">'+response.nome+'</h6>'+
-'<small class="nomeProduto" name="nome_Produto" id="nome_Produto">'+response.nome+'</small>'+
+'<small>Codigo do produto: </small>'+
+'<small class="nomeProduto" name="nome_Produto" id="nome_Produto">'+response.id+'</small>'+
 '</div>'+
-'<span class="precoprod">'+response.preco+'</span>'+
-'<a class="btn btn-danger" href="javascript:void(0)" id="remInput">'+
+'<div class="p-2"><span class="dinheiro">'+response.preco +'</span></div>'+
+'<div class="p-2"><a class="btn btn-danger" href="javascript:void(0)" id="remInput">'+
 				'<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> '+
 				'Remover produto'+
-	'</a>'+'</li>').appendTo(scntDiv);
+	'</a></div>'+'</li>').appendTo(scntDiv);
 
     carrinhos.each(function(){
         var carrinhoAtual = $(this);
-        var valorItem = carrinhoAtual.find('.precoprod');
+        var valorItem = carrinhoAtual.find('.dinheiro');
         var resultado = 0;
 
         valorItem.each(function(){
-            var tdAtual = $(this);
-            var pegaValor = parseFloat(tdAtual.text());
-            resultado = parseFloat(resultado + pegaValor);
-        });
-
+			var arredondar;
+			var tdAtual = $(this).text().replace('R$','');
+			tdAtual = tdAtual.replace('.','')
+			var pegaValor = parseFloat(tdAtual.replace(',', '.'));		
+			resultado = parseFloat(resultado + pegaValor);
+			arredondar= Math.round(resultado * 100);
+			resultado = Math.ceil(arredondar)/100;
+		});
+		$('#total').mask('###.###.##0,00',{reverse: true});
         $('#total').text(resultado);
-
+		
     });
 },
 error: function(error) {
@@ -43,15 +50,19 @@ error: function(error) {
 		$(this).parents('li').remove();
 		carrinhos.each(function(){
 			var carrinhoAtual = $(this);
-			var valorItem = carrinhoAtual.find('.precoprod');
+			var valorItem = carrinhoAtual.find('.dinheiro');
 			var resultado = 0;
 
 			valorItem.each(function(){
-				var tdAtual = $(this);
-				var pegaValor = parseFloat(tdAtual.text());
+				var arredondar;
+				var tdAtual = $(this).text().replace('R$','');
+				tdAtual = tdAtual.replace('.','')
+				var pegaValor = parseFloat(tdAtual.replace(',', '.'));
 				resultado = parseFloat(resultado + pegaValor);
+				arredondar= Math.round(resultado * 100);
+				resultado = Math.ceil(arredondar)/100;
 			});
-
+			$('#total').mask('###.###.##0,00',{reverse: true});
 			$('#total').text(resultado);
 
 		});
@@ -59,7 +70,7 @@ error: function(error) {
 	});
 	$(document).on('click', '#gerar', function () {
 		var json = {};
-		json["CPF"]=$('#CPF').val();
+		json["cpf"]=$('#cpf').val();
 		
 		json["nomeProduto"] = ListarProdutos();
 		json["Total"]=$('#total').text();
