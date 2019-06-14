@@ -191,23 +191,24 @@ def Cadastrar_produto():
         formFornecedor = str(form.fornecedor.data)
         preco=formPreco.replace(".","")
         preco=preco.replace(",",".")
+        categoria = str(request.form['categoria'])
         try:
             print("aqui foi")
             print(preco)
             print(formFornecedor)
-            if tables.Produtos.insertProduto(formNome,preco,formFornecedor):
+            if tables.Produtos.insertProduto(formNome,preco,formFornecedor,categoria):
                 flash("Produto cadastrado com Sucesso")
                 return redirect(url_for('Cadastrar_produto'))
             flash('CNPJ do fornecedor não encontrado')
-            return render_template("produto.html", ProdutoForm=form, cadastrar=True )
+            return render_template("produto.html", ProdutoForm=form, cadastrar=True,categorias=tables.CategoriaProduto.getCategoria())
         except:
             print("erro aqui")
             flash('CNPJ do fornecedor não encontrado')
-            return render_template("produto.html", ProdutoForm=form, cadastrar=True )
+            return render_template("produto.html", ProdutoForm=form, cadastrar=True,categorias=tables.CategoriaProduto.getCategoria())
         
         
 
-    return render_template("produto.html", ProdutoForm=form, cadastrar=True )
+    return render_template("produto.html", ProdutoForm=form, cadastrar=True,categorias=tables.CategoriaProduto.getCategoria())
 @app.route("/produto/deletar/<id>", methods=["GET","POST"])
 def DeletarProduto(id):
     print("aqui foi")
@@ -243,16 +244,18 @@ def Pesquisar_produto():
             formNome = str(form.nome.data)
             try:
                 print("aqui foi")
+                prod=[]
                 cur = conn.cursor()
-                cur.execute('SELECT * FROM Produtos WHERE nome LIKE "%?%"',(formNome, ))
-                
-                print(cur)
-                for linha in cur.fetchall():
-                    print(linha)
+                cur.execute('SELECT * FROM Produtos WHERE nome LIKE ?',("%"+formNome+"%", ))
+                produt=cur.fetchall()
                 conn.commit()
-                produt=tables.Produtos.getProdutoname(formNome)
+                for linha in produt:
+                    prod.append(tables.Produtos.getProduto(linha[1]))
+                
                 if produt:
-                    return render_template('produto.html',ProdutoForm=form,cadastrar=False,pesquisa=True,produtos=tables.Produtos.getProduto(formNome))
+                    print("aqui foi tambem")
+                    print(prod)
+                    return render_template('produto.html',ProdutoForm=form,cadastrar=False,pesquisa=True,produtos=prod)
             
                 else:
                     flash('Produto não encontrado')
@@ -304,16 +307,21 @@ def atualizar_produto(id):
     if request.method == 'POST':
         formNome= str(request.form['nome'])
         formPreco = str(request.form['preco'])
+        formPreco = formPreco.replace('.','')
+        formPreco = formPreco.replace(',','.')
         formFornecedor = str(request.form["fornecedor"])
-        
-        if form.validate_on_submit():
-            tables.Produtos.setProduto(formNome,formPreco,formFornecedor)
+        fornecedorCnpj = tables.Fornecedor.getFornecedorByNome(formFornecedor)
+        for id in fornecedorCnpj:
+            Fornecedor=id.cnpj
+        if fornecedorCnpj:
+            flash("Produto "+formNome+" atualizado com Sucesso")
+            tables.Produtos.setProduto(formNome,formPreco,Fornecedor)
             return redirect(url_for('Pesquisar_produto'))
         else:
-            return render_template('produto.html',ProdutoForm=form,cadastrar=False,pesquisa=True,atualizar=True,produtos=tables.Produtos.getProduto(nome))
+            return render_template('produto.html',ProdutoForm=form,cadastrar=False,pesquisa=True,atualizar=True,produtos=tables.Produtos.getProduto(formNome))
 
         
-    return render_template('produto.html',ProdutoForm=form,cadastrar=False,pesquisa=True,atualizar=True,produtos=tables.Produtos.getProduto(nome))
+    return render_template('produto.html',ProdutoForm=form,cadastrar=False,pesquisa=True,atualizar=True,produtos=tables.Produtos.getProduto(formNome))
 
 @app.route("/orcamento/cadastrar/", methods=["GET","POST"])
 def Cadastrar_Orcamento():
@@ -384,5 +392,18 @@ def Pedido(codigoOrcamento):
 
 @app.route("/Pedido/cadastrar/", methods=["GET","POST"])
 def CadastrarPedido():
+
+    return render_template("Pedido.html")
+
+@app.route("/Categoria/Atualizar/", methods=["GET","POST"])
+def Atualizar_Categoria():
+
+    return render_template("Pedido.html")
+@app.route("/Categoria/", methods=["GET","POST"])
+def ListaCategorias():
+
+    return render_template("Pedido.html")
+@app.route("/Categoria/cadastrar/", methods=["GET","POST"])
+def Cadastrar_Categoria():
 
     return render_template("Pedido.html")

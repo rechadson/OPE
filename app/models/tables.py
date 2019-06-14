@@ -7,29 +7,20 @@ class Produtos(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(80), nullable=False)
     preco = db.Column(db.Float(120), nullable=False)
+    Categoria = db.Column(db.String,db.ForeignKey('CategoriaProduto.Categoria'))
+    Categoria = db.relationship('CategoriaProduto',foreign_keys=Categoria)
     fornecedor_cnpj = db.Column(db.String,db.ForeignKey('Fornecedor.cnpj'))
     fornecedor = db.relationship('Fornecedor',foreign_keys=fornecedor_cnpj)
-    def __init__(self,nome,preco,fornecedor_cnpj):
+    def __init__(self,nome,preco,fornecedor_cnpj,Categoria):
         self.nome = nome
         self.preco = preco
         self.fornecedor_cnpj = fornecedor_cnpj
-    def getProdutoname(nome):
-        produto = True
-        with sqlite3.connect('storage.db') as conn:
-            try:
-                cur = conn.cursor()
-                cur.execute('SELECT * FROM Produtos WHERE nome LIKE = %?%',(nome, ))
-                for linha in cursor.fetchall():
-                    print(linha)
-                conn.commit()
-            except:
-                conn.rollback()
-        return produto
-    def insertProduto(nome,preco,fornecedor_cnpj):
+        self.Categoria = Categoria
+    def insertProduto(nome,preco,fornecedor_cnpj,Categoria):
         print(fornecedor_cnpj)
         fornecedor = Fornecedor.query.filter_by(cnpj = fornecedor_cnpj).all()
         if fornecedor:
-            inserir = Produtos(nome,preco,fornecedor_cnpj)
+            inserir = Produtos(nome,preco,fornecedor_cnpj,Categoria)
             db.session.add(inserir)
             db.session.commit()
             return True
@@ -39,11 +30,12 @@ class Produtos(db.Model):
        
         return produto
     
-    def setProduto(nome,preco,fornecedor_cnpj):
+    def setProduto(nome,preco,fornecedor_cnpj,Categoria):
         produto = Produtos.query.filter_by(nome = nome).first()
         produto.nome = nome
         produto.preco = preco
         produto.fornecedor_cnpj = fornecedor_cnpj
+        produto.Categoria = Categoria
         db.session.commit()
     def getProdutoByFornecedor(fornecedor_cnpj):
         produto = Produtos.query.filter_by(fornecedor_cnpj = fornecedor_cnpj).all()
@@ -186,7 +178,9 @@ class Fornecedor(db.Model):
     def getFornecedor(cnpj):
         fornecedor = Fornecedor.query.filter_by(cnpj = cnpj).all()
         return fornecedor
-    
+    def getFornecedorByNome(nome):
+        fornecedor = Fornecedor.query.filter_by(nome = nome).all()
+        return fornecedor
     def insertFornecedor(nome,email,cnpj):
         print("tentando")
         inserir = Fornecedor(nome,email,cnpj)
@@ -219,5 +213,30 @@ class Usuario(db.Model):
         senha = Usuario.query.filter_by(Senha = Senha).first()
         
         return senha
+
+class CategoriaProduto(db.Model):
+    __tablename__ = "CategoriaProduto"
+    id = db.Column(db.Integer, primary_key=True)
+    Categoria = db.Column(db.String(20),unique=True, nullable=False)
+    CalcularMetragem = db.Column(db.Boolean())
+
+    def __init__(self,Categoria,CalcularMetragem):
+        self.Categoria = Categoria
+        self.CalcularMetragem = CalcularMetragem
+        
+    def getCategoriaByname(Categoria):
+        categoria = CategoriaProduto.query.filter_by(Categoria = Categoria).first()
+        
+        return categoria
+    def getCategoria():
+        categoria = CategoriaProduto.query.all()
+        
+        return categoria
+    def insertCategoria(Categoria,CalcularMetragem):
+        print("tentando")
+        inserir = CategoriaProduto(Categoria,CalcularMetragem)
+        print(inserir)
+        db.session.add(inserir)
+        db.session.commit()
 
     
