@@ -14,10 +14,10 @@
             <td><b>Total</b></td>
         </tr>
     </thead>
-    {% for orcament in orcamentos %}
+    {% for orcamentos in orcament %}
     <tr>
-        <td>{{ orcament.cliente_cpf }}</td>
-        <td>{{ orcament.preco }}</td>
+        <td>{{ orcamentos.cliente_cpf }}</td>
+        <td>{{ orcamentos.preco }}</td>
 
     </tr>
     {% endfor %}

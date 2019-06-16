@@ -5,6 +5,7 @@ from app.models import forms, tables
 from datetime import datetime
 import sqlite3
 import locale
+from app.models.tables import Orcamento
 
 
 @app.route("/<user><inputPassword>", methods=["POST"])
@@ -354,7 +355,7 @@ def Cadastrar_Orcamento():
 
 @app.route("/Relatorio/Orcamento/")
 def RelatorioOrcamento():
-   
+    
     return render_template("RelatorioOrcamento.html")
 
 
@@ -362,6 +363,11 @@ def RelatorioOrcamento():
 def RelatorioPedidos():
    
     return render_template("RelatorioPedidos.html")
+
+@app.route("/Relatorio/Pesquisar/")
+def RelatorioPesquisar():
+   
+    return render_template("RelatorioPesquisar.html")
 
 @app.route("/Pedido/<codigoOrcamento>", methods=["GET","POST"])
 @app.route("/Pedido/", methods=["GET","POST"],defaults={"codigoOrcamento":None})
