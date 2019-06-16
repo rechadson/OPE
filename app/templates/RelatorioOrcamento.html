@@ -11,16 +11,19 @@
     <thead>
         <tr class="bg-danger">
             <td><b>CPF do Cliente</b></td>
+            <td><b>Data</b></td>
             <td><b>Total</b></td>
         </tr>
     </thead>
     {% for orcamentos in orcament %}
     <tr>
         <td>{{ orcamentos.cliente_cpf }}</td>
+        <td>{{ orcamentos.data }}</td>
         <td>{{ orcamentos.preco }}</td>
 
     </tr>
     {% endfor %}
+
 </table>
       <a href="#" class="btn btn-danger btn-lg btn-block" role="button" aria-pressed="true">Enviar por Email</a>
 

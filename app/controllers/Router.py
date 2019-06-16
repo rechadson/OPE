@@ -359,8 +359,7 @@ def Cadastrar_Orcamento():
 @app.route("/Relatorio/Orcamento/")
 def RelatorioOrcamento():
     
-    return render_template("RelatorioOrcamento.html")
-
+    return render_template("RelatorioOrcamento.html", orcament = tables.Orcamento.getAllorcamento())
 
 @app.route("/Relatorio/Pedidos/")
 def RelatorioPedidos():

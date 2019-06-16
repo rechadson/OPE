@@ -9,16 +9,14 @@
 <table class="table table-bordered table-hover">
     <thead>
         <tr class="bg-danger">
-            <td><b>Nome do Cliente</b></td>
-            <td><b>Produtos</b></td>
-            <td><b>Total</b></td>
+            <td><b>ID</b></td>
+            <td><b>ID Orçamento</b></td>
         </tr>
     </thead>
-    {% for salas in sala %}
+    {% for pedido in pedidos %}
     <tr>
-        <td>{{ Cliente.nome }}</td>
-        <td>{{ Produto.nome }}</td>
-        <td>{{ total }}</td>
+        <td>{{ pedido.id }}</td>
+        <td>{{ pedido.orcamento_id }}</td>
 
     </tr>
     {% endfor %}
