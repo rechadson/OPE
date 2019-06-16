@@ -7,8 +7,8 @@ class Produtos(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(80), nullable=False)
     preco = db.Column(db.Float(120), nullable=False)
-    Categoria = db.Column(db.String,db.ForeignKey('CategoriaProduto.Categoria'))
-    Categoria = db.relationship('CategoriaProduto',foreign_keys=Categoria)
+    categoria_id = db.Column(db.Integer,db.ForeignKey('CategoriaProduto.id'))
+    categoria = db.relationship('CategoriaProduto',foreign_keys=categoria_id)
     fornecedor_cnpj = db.Column(db.String,db.ForeignKey('Fornecedor.cnpj'))
     fornecedor = db.relationship('Fornecedor',foreign_keys=fornecedor_cnpj)
     def __init__(self,nome,preco,fornecedor_cnpj,Categoria):

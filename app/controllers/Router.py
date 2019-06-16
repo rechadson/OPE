@@ -184,6 +184,8 @@ def Deletar_cliente(cpf):
     
 @app.route("/produto/cadastrar/", methods=["GET","POST"])
 def Cadastrar_produto():
+    cat=tables.CategoriaProduto.getCategoria()
+    
     form = forms.ProdutoForm()
     if form.validate_on_submit():
         formNome= str(form.nome.data)
