@@ -48,11 +48,12 @@ def Orcamento():
 
 @app.route("/adicionar/produto/", methods=["GET","POST"])
 def AdicionarProduto():
+    locale.localeconv()['currency_symbol']
     produtos = tables.Produtos.getAllProduto()
     prod =  str(request.form['prod'])
     for produto in produtos:
         if produto.nome == prod:
-            locale.setlocale(locale.LC_ALL, 'pt_BR')
+            locale.setlocale(locale.LC_ALL,'')
             preco=locale.currency(produto.preco, grouping=True) 
             return jsonify({"nome":produto.nome,"preco":preco,"fornecedor":produto.fornecedor_cnpj,"id":produto.id})
     
@@ -185,6 +186,8 @@ def Deletar_cliente(cpf):
     
 @app.route("/produto/cadastrar/", methods=["GET","POST"])
 def Cadastrar_produto():
+    cat=tables.CategoriaProduto.getCategoria()
+    
     form = forms.ProdutoForm()
     if form.validate_on_submit():
         formNome= str(form.nome.data)
