@@ -47,11 +47,12 @@ def Orcamento():
 
 @app.route("/adicionar/produto/", methods=["GET","POST"])
 def AdicionarProduto():
+    locale.localeconv()['currency_symbol']
     produtos = tables.Produtos.getAllProduto()
     prod =  str(request.form['prod'])
     for produto in produtos:
         if produto.nome == prod:
-            locale.setlocale(locale.LC_ALL, 'pt_BR')
+            locale.setlocale(locale.LC_ALL,'')
             preco=locale.currency(produto.preco, grouping=True) 
             return jsonify({"nome":produto.nome,"preco":preco,"fornecedor":produto.fornecedor_cnpj,"id":produto.id})
     
