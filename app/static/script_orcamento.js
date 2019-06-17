@@ -35,8 +35,10 @@ success: function(response) {
 			arredondar= Math.round(resultado * 100);
 			resultado = Math.ceil(arredondar)/100;
 		});
-		$('#total').mask('###.###.##0,00',{reverse: true});
-        $('#total').text(resultado);
+		
+		$('#total').text(resultado);
+		$("#total").maskMoney({symbol:'R$ ',showSymbol:true, thousands:'.', decimal:',', symbolStay: true});
+		
 		
     });
 },
@@ -70,7 +72,6 @@ error: function(error) {
 	});
 	$(document).on('click', '#gerar', function () {
 		var json = {};
-		json["cpf"]=$('#cpf').val();
 		
 		json["nomeProduto"] = ListarProdutos();
 		json["Total"]=$('#total').text();
@@ -102,7 +103,7 @@ error: function(error) {
 				{
 						$('.produto > *').remove();
 						$('#total').text("R$ 0");
-						window.location.replace("../Pedido/"+response.codigoOrcamento);
+						window.location.replace("../imprimir/orcamento/"+response.codigoOrcamento);
 						alert('Orçamento Gerado com Sucesso')
 						
 				}

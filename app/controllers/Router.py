@@ -2,11 +2,13 @@
 from app import app,db
 from flask import render_template, redirect, url_for, flash,session,request,jsonify
 from app.models import forms, tables
-from datetime import datetime
+from datetime import datetime,date
 import sqlite3
 import locale
+import sys
 from app.models.tables import Orcamento
 
+locale.setlocale(locale.LC_ALL,'')
 
 @app.route("/<user><inputPassword>", methods=["POST"])
 @app.route("/", methods=["GET","POST"],defaults={"user":None,"inputPassword":None})
@@ -53,7 +55,7 @@ def AdicionarProduto():
     prod =  str(request.form['prod'])
     for produto in produtos:
         if produto.nome == prod:
-            locale.setlocale(locale.LC_ALL,'')
+            
             preco=locale.currency(produto.preco, grouping=True) 
             return jsonify({"nome":produto.nome,"preco":preco,"fornecedor":produto.fornecedor_cnpj,"id":produto.id})
     
@@ -331,27 +333,24 @@ def atualizar_produto(id):
 def Cadastrar_Orcamento():
     if request.method == 'POST':
         dados = request.get_json()
-        cpf = dados["cpf"]
         total = dados["Total"]
-        data = datetime.now()
+        data = date.today()
+        #data=data.strftime("%d/%m/%y")
         try:
-            cliente=tables.Cliente.getCliente(cpf)
-            if (cliente):
-                print(cliente)
-                codigoGerado = tables.Orcamento.insertOrcamento(total,cpf,data)
-                if(codigoGerado!=""):
-                    condId = int(codigoGerado)
-                    
-                    for produto in dados["nomeProduto"]:
-                        print(produto)
-                        idProduto = tables.Produtos.getProdutoID(produto)
-                        print(idProduto)
-                        for produto in idProduto:
-                            prodid = int(produto.id)
-                            tables.Orcamento_Produto.insertOrcamentoProduto(condId,prodid)
+            codigoGerado = tables.Orcamento.insertOrcamento(total,data)
+            print("aqui foi")
+            print(codigoGerado)
+            if(codigoGerado!=""):
+                condId = int(codigoGerado)
                 
-                    return jsonify({"Resultado":"Susess","codigoOrcamento":codigoGerado})
-            return jsonify({"Resultado":"Cliente"})
+                for produto in dados["nomeProduto"]:
+                    idProduto = tables.Produtos.getProdutoID(produto)
+                    for produto in idProduto:
+                        prodid = int(produto.id)
+                        tables.Orcamento_Produto.insertOrcamentoProduto(condId,prodid)
+            
+                return jsonify({"Resultado":"Susess","codigoOrcamento":codigoGerado})
+        
         except:
             return jsonify({"Resultado":"Error"}) 
     return jsonify({"Resultado":"Error"}) 
@@ -370,6 +369,37 @@ def RelatorioPedidos():
 def RelatorioPesquisar():
    
     return render_template("RelatorioPesquisar.html")
+@app.route("/imprimir/orcamento/<codigoOrcamento>", methods=["GET","POST"])
+def imprimirOrcamento(codigoOrcamento):
+    try:
+        orcamento = tables.Orcamento.getOrcamento(codigoOrcamento)
+        
+            
+        if codigoOrcamento:
+            if orcamento:
+                for precoOrcamento in orcamento:
+                    total = locale.currency(precoOrcamento.preco, grouping=True)
+                produtos = []
+                codProduto = tables.Orcamento_Produto.getOrcamentoProduto(codigoOrcamento)
+               
+                for cod in codProduto:
+                    produtos.append(tables.Produtos.getProdutoID(cod.Produto_id))
+                    print(produtos)
+                    print(total)
+                    print(codigoOrcamento)
+                    
+            return render_template('impressaoOrcamento.html',cart=produtos,total=total,codigo=codigoOrcamento)
+    except OSError as err:
+        print("OS error: {0}".format(err))
+    except ValueError:
+        print("Could not convert data to an integer.")
+        return redirect(url_for('Orcamento'))
+    except:
+        print("Unexpected error:", sys.exc_info()[0])
+        return redirect(url_for('Orcamento'))
+    
+    
+
 
 @app.route("/Pedido/<codigoOrcamento>", methods=["GET","POST"])
 @app.route("/Pedido/", methods=["GET","POST"],defaults={"codigoOrcamento":None})
@@ -377,26 +407,18 @@ def RelatorioPesquisar():
 def Pedido(codigoOrcamento):
    
     orcamento = tables.Orcamento.getOrcamento(codigoOrcamento)
-        
+    for precoOrcamento in orcamento:
+        preco = locale.currency(precoOrcamento.preco, grouping=True) 
     if codigoOrcamento:
         if orcamento:
-            produtos = {}
+            produtos = []
             codProduto = tables.Orcamento_Produto.getOrcamentoProduto(codigoOrcamento)
             for cod in codProduto:
-                produt=tables.Produtos.getProdutoID(cod.Produto_id)
-                for prodnome in produt:
-                    produtos[prodnome.nome]=[prodnome.nome,prodnome.preco]
-            
-            for produts in produtos:
-                print(produts)
-                
-            for cpforcamento in orcamento:
-                cpf = cpforcamento.cliente_cpf
-            cliente=tables.Cliente.getCliente(cpf)
-            if cliente:
-                return render_template("Pedido.html",cart=produtos,client=cliente,orcamento=orcamento,create=False,codigoOrcamento=codigoOrcamento)
+                produtos.append(tables.Produtos.getProdutoID(cod.Produto_id))
+         
+            return render_template("Pedido.html",cart=produtos,orcamento=preco,codigoOrcamento=codigoOrcamento)
         return redirect(url_for('Orcamento'))
-    return render_template("Pedido.html",create=True)   
+    return render_template("Pedido.html")   
 
 @app.route("/Pedido/cadastrar/", methods=["GET","POST"])
 def CadastrarPedido():

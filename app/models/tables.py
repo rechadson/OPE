@@ -94,30 +94,29 @@ class Orcamento(db.Model):
     __tablename__ = "Orcamento"
     id = db.Column(db.Integer, primary_key=True)
     preco = db.Column(db.Float(120), nullable=False)
-    data = db.Column(db.DateTime)
-    cliente_cpf = db.Column(db.String,db.ForeignKey('Cliente.CPF'))
-    cliente = db.relationship('Cliente',foreign_keys=cliente_cpf)
+    data = db.Column(db.Date)
+    
 
-    def __init__(self,preco,cliente_cpf,data):
+    def __init__(self,preco,data):
         self.preco = preco
-        self.cliente_cpf = cliente_cpf
         self.data = data
     def getAllorcamento():
         orcamento = Orcamento.query.all()
         return orcamento
-    def getClienteOrcamento(cliente_cpf):
-        cliente=Orcamento.query.filter_by(cliente_cpf = cliente_cpf).all()
-        return cliente
+
     def getOrcamento(id):
         orcamento = Orcamento.query.filter_by(id = id).all()
         return orcamento
     def getUltimoOrcamento():
         orcamento = Orcamento.query.all()
         return orcamento[-1].id
-    def insertOrcamento(preco,cliente_cpf,data):
-        inserir = Orcamento(preco,cliente_cpf,data)
+    def insertOrcamento(preco,data):
+        inserir = Orcamento(preco,data)
+        print("inserindo orçamento")
+        print(inserir)
         db.session.add(inserir)
         db.session.commit()
+        print("codigo sendo gerado")
         codigogerado = Orcamento.getUltimoOrcamento()
         return codigogerado
 
@@ -152,7 +151,8 @@ class Pedido(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     orcamento_id = db.Column(db.Integer,db.ForeignKey('Orcamento.id'))
     orcamento = db.relationship('Orcamento',foreign_keys=orcamento_id)
-    
+    cliente_cpf = db.Column(db.String,db.ForeignKey('Cliente.CPF'))
+    cliente = db.relationship('Cliente',foreign_keys=cliente_cpf)
 
     def __init__(self,orcamento_id):        
         self.orcamento_id = orcamento_id

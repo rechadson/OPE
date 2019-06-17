@@ -19,20 +19,21 @@
         {%for carrinho in cart%}
          <li class="list-group-item d-flex justify-content-between lh-condensed">
           <div>
-            <h6 class="my-0">{{carrinho}}</h6>
-            <small class="text-muted">{{carrinho}}</small>
+            <h3 class="my-0">{{carrinho[0].nome}}</h3>
+            <h6 class="my-0">Código do produto</h6>
+            <small class="text-muted">{{carrinho[0].id}}</small>
           </div>
           
         </li>
         {%endfor%}
-        {%for orcamento in orcamento%}
+        
         <li class="list-group-item d-flex justify-content-between">
           <span>Total (R$)</span>
 
           <label for="dinheiro">R$</label>
-          <input type="text" id="dinheiro" name="dinheiro" class="dinheiro form-control" value = "R$ {{orcamento.preco}}" style="display:inline-block" />
+          <input type="text" id="dinheiro" name="dinheiro" class="dinheiro form-control" value = "R$ {{orcamento}}" style="display:inline-block" />
         </li>
-        {%endfor%}
+        
         <li class="list-group-item d-flex justify-content-between">
           <label>Codigo Orçamento</label>
             <input type="text" class="form-control" id="codOrcamento" placeholder="" required value="{{codigoOrcamento}}">
@@ -49,7 +50,7 @@
       <form class="needs-validation" novalidate>
         <div class="row">
           <div class="col-md-10 mb-3">
-            {%if create%}
+            
             <label for="Nome">Nome Completo</label>
             <input type="text" class="form-control" id="Nome" placeholder="" value="" required>
             <div class="invalid-feedback">
@@ -83,43 +84,6 @@
             Please enter your shipping address.
           </div>
         </div>
-        {%else%}
-              {%for cliente in client%}
-            <label for="Nome">Nome Completo</label>
-            <input type="text" class="form-control" id="Nome" placeholder="" value="{{cliente.nome}}" required>
-            <div class="invalid-feedback">
-              Valid first name is required.
-            </div>
-          </div>
-        </div>
-
-        <div class="mb-3">
-          <label for="username">CPF</label>
-          <div class="input-group">
-            <input type="text" class="form-control" id="cpf" placeholder="CPF" required value="{{cliente.CPF}}">
-            <div class="invalid-feedback" style="width: 100%;">
-              Your username is required.
-            </div>
-          </div>
-        </div>
-
-        <div class="mb-3">
-          <label for="email">Email <span class="text-muted">(Opcional)</span></label>
-          <input type="email" class="form-control" id="email" placeholder="you@example.com" >
-          <div class="invalid-feedback">
-            Please enter a valid email address for shipping updates.
-          </div>
-        </div>
-
-        <div class="mb-3">
-          <label for="address">Endereço</label>
-          <input type="text" class="form-control" id="address" placeholder="Rua japão 144" required value="{{cliente.Endereco}}">
-          <div class="invalid-feedback">
-            Please enter your shipping address.
-          </div>
-        </div>
-        {%endfor%}
-        {%endif%}
         
         <div class="mb-3">
           <label for="address2">Complemento<span class="text-muted">(Optional)</span></label>
