@@ -49,12 +49,7 @@
     {%for fon in produtos%}
     <form  method = "POST">
         <label class="mr-sm-2 sr-only" for="categoria">Categoria do produto</label>
-        <select class="custom-select mr-sm-2" id="categoria" name="categoria">
-          
-            {% for categoria in categorias %}
-            <option>{{ categoria.nome }}</option>
-            {% endfor %}
-          </select>
+        <input type="fornecedor" class="form-control" id="categoria" name="categoria" value="{{fon[0].categoria.Categoria}}"readonly="readonly">
     <div class="form-group">
       <label for="nome">Nome:</label>
       <input type="text" class="form-control" id="nome" name="nome"value="{{fon[0].nome}}">

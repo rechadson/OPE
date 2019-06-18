@@ -44,14 +44,8 @@ class Produtos(db.Model):
         produto = Produtos.query.filter_by(nome = nome).all()
         return produto
     def getProdutoID(id):
-        
         produto = Produtos.query.filter_by(id = id).all()
-        print(produto)
         return produto
-    
-
-    def __repr__(self):
-        return '<User %r>' % self.nome
 
 class Cliente(db.Model):
     __tablename__ = "Cliente"

@@ -12,6 +12,6 @@ migrate = Migrate(app,db)
 
 manager = Manager(app)
 manager.add_command('db',MigrateCommand)
-manager.add_command("runserver", Server(host="0.0.0.0", port=81))
+manager.add_command("runserver", Server(host="0.0.0.0", port=80))
 from app.models import tables
 from app.controllers import Router

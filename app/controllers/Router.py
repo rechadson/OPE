@@ -1,15 +1,20 @@
 # coding=utf-8
 from app import app,db
-from flask import render_template, redirect, url_for, flash,session,request,jsonify
+from flask import render_template, redirect, url_for, flash,session,request,jsonify,make_response
 from app.models import forms, tables
 from datetime import datetime,date
+import smtplib
+import pdfkit
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
 import sqlite3
 import locale
 import sys
 from app.models.tables import Orcamento
 
 locale.setlocale(locale.LC_ALL,'')
-
 @app.route("/<user><inputPassword>", methods=["POST"])
 @app.route("/", methods=["GET","POST"],defaults={"user":None,"inputPassword":None})
 def login(user,inputPassword):
@@ -257,7 +262,6 @@ def Pesquisar_produto():
                 conn.commit()
                 for linha in produt:
                     prod.append(tables.Produtos.getProduto(linha[1]))
-                
                 if produt:
                     print("aqui foi tambem")
                     print(prod)
@@ -373,22 +377,18 @@ def RelatorioPesquisar():
 def imprimirOrcamento(codigoOrcamento):
     try:
         orcamento = tables.Orcamento.getOrcamento(codigoOrcamento)
-        
-            
+        for precoOrcamento in orcamento:
+            preco = locale.currency(precoOrcamento.preco, grouping=True)
+            codOrcamento = precoOrcamento.id
         if codigoOrcamento:
             if orcamento:
-                for precoOrcamento in orcamento:
-                    total = locale.currency(precoOrcamento.preco, grouping=True)
                 produtos = []
                 codProduto = tables.Orcamento_Produto.getOrcamentoProduto(codigoOrcamento)
-               
                 for cod in codProduto:
                     produtos.append(tables.Produtos.getProdutoID(cod.Produto_id))
-                    print(produtos)
-                    print(total)
-                    print(codigoOrcamento)
-                    
-            return render_template('impressaoOrcamento.html',cart=produtos,total=total,codigo=codigoOrcamento)
+            
+                return render_template("impressaoOrcamento.html",cart=produtos,total=preco,orcamento=codOrcamento)
+        return redirect(url_for('Orcamento'))
     except OSError as err:
         print("OS error: {0}".format(err))
     except ValueError:
@@ -397,9 +397,6 @@ def imprimirOrcamento(codigoOrcamento):
     except:
         print("Unexpected error:", sys.exc_info()[0])
         return redirect(url_for('Orcamento'))
-    
-    
-
 
 @app.route("/Pedido/<codigoOrcamento>", methods=["GET","POST"])
 @app.route("/Pedido/", methods=["GET","POST"],defaults={"codigoOrcamento":None})
