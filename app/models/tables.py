@@ -54,14 +54,21 @@ class Cliente(db.Model):
     CPF = db.Column(db.String(80),unique=True, nullable=False)
     telefone = db.Column(db.String(80), nullable=False)
     Endereco = db.Column(db.String(80), nullable=False)
-    def __init__(self,nome,CPF,telefone,Endereco):
+    Cidade = db.Column(db.String(80), nullable=False)
+    Estado = db.Column(db.String(80), nullable=False)
+    Complemento = db.Column(db.String(80))
+    CEP = db.Column(db.String(80))
+    def __init__(self,nome,CPF,telefone,Endereco,Cidade,Estado,Complemento,CEP):
         self.nome = nome
         self.CPF = CPF
         self.telefone = telefone
         self.Endereco = Endereco
-
-    def insertCliente(nome,CPF,telefone,endereco):
-        inserir = Cliente(nome,CPF,telefone,endereco)
+        self.Cidade = Cidade
+        self.Estado = Estado
+        self.Complemento = Complemento
+        self.CEP = CEP
+    def insertCliente(nome,CPF,telefone,Endereco,Cidade,Estado,Complemento,CEP):
+        inserir = Cliente(nome,CPF,telefone,Endereco,Cidade,Estado,Complemento,CEP)
         db.session.add(inserir)
         db.session.commit()
 
@@ -70,7 +77,7 @@ class Cliente(db.Model):
         print(cliente)
         return cliente
 
-    def setCliente(nome,CPF,telefone,endereco):
+    def setCliente(nome,CPF,telefone,Endereco,Cidade,Estado,Complemento):
         cliente = Cliente.query.filter_by(CPF = CPF).first()
         cliente.nome = nome
         cliente.telefone = telefone
@@ -89,9 +96,9 @@ class Orcamento(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     preco = db.Column(db.Float(120), nullable=False)
     data = db.Column(db.Date)
-    
+    prazoEntrega = db.Column(db.Integer)
 
-    def __init__(self,preco,data):
+    def __init__(self,preco,data,prazoEntrega):
         self.preco = preco
         self.data = data
     def getAllorcamento():
@@ -104,7 +111,7 @@ class Orcamento(db.Model):
     def getUltimoOrcamento():
         orcamento = Orcamento.query.all()
         return orcamento[-1].id
-    def insertOrcamento(preco,data):
+    def insertOrcamento(preco,data,prazoEntrega):
         inserir = Orcamento(preco,data)
         print("inserindo orçamento")
         print(inserir)
@@ -147,12 +154,17 @@ class Pedido(db.Model):
     orcamento = db.relationship('Orcamento',foreign_keys=orcamento_id)
     cliente_cpf = db.Column(db.String,db.ForeignKey('Cliente.CPF'))
     cliente = db.relationship('Cliente',foreign_keys=cliente_cpf)
+    valor = db.Column(db.Float)
 
-    def __init__(self,orcamento_id):        
+    def __init__(self,orcamento_id,cliente_cpf,valor):        
         self.orcamento_id = orcamento_id
-
-    def __repr__(self):
-        return '<User %r>' % self.username
+        self.cliente_cpf = cliente_cpf
+        self.valor = valor
+    
+    def cadastrarPedido(orcamento_id,cliente_cpf,valor):
+        inserir = Pedido(orcamento_id,cliente_cpf,valor)
+        db.session.add(inserir)
+        db.session.commit()
 
 class Fornecedor(db.Model):
     __tablename__ = "Fornecedor"

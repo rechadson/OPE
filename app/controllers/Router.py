@@ -1,14 +1,9 @@
 # coding=utf-8
 from app import app,db
-from flask import render_template, redirect, url_for, flash,session,request,jsonify,make_response
+from flask import render_template, redirect, url_for, flash,session,request,jsonify
 from app.models import forms, tables
 from datetime import datetime,date
 import smtplib
-import pdfkit
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
-from email import encoders
 import sqlite3
 import locale
 import sys
@@ -380,6 +375,12 @@ def imprimirOrcamento(codigoOrcamento):
         for precoOrcamento in orcamento:
             preco = locale.currency(precoOrcamento.preco, grouping=True)
             codOrcamento = precoOrcamento.id
+            data = precoOrcamento.data
+            datafim = date.fromordinal(data.toordinal()+15)
+            data = data.strftime("%d/%m/%Y")
+            datafim = datafim.strftime("%d/%m/%Y")
+            print(data)
+            print(datafim)
         if codigoOrcamento:
             if orcamento:
                 produtos = []
@@ -387,7 +388,7 @@ def imprimirOrcamento(codigoOrcamento):
                 for cod in codProduto:
                     produtos.append(tables.Produtos.getProdutoID(cod.Produto_id))
             
-                return render_template("impressaoOrcamento.html",cart=produtos,total=preco,orcamento=codOrcamento)
+                return render_template("impressaoOrcamento.html",cart=produtos,total=preco,orcamento=codOrcamento,data=data,datafim=datafim)
         return redirect(url_for('Orcamento'))
     except OSError as err:
         print("OS error: {0}".format(err))
@@ -405,7 +406,8 @@ def Pedido(codigoOrcamento):
    
     orcamento = tables.Orcamento.getOrcamento(codigoOrcamento)
     for precoOrcamento in orcamento:
-        preco = locale.currency(precoOrcamento.preco, grouping=True) 
+        preco = locale.currency(precoOrcamento.preco, grouping=True)
+        print(preco)
     if codigoOrcamento:
         if orcamento:
             produtos = []
@@ -419,6 +421,28 @@ def Pedido(codigoOrcamento):
 
 @app.route("/Pedido/cadastrar/", methods=["GET","POST"])
 def CadastrarPedido():
+    if request.method == 'POST':
+        formNome= str(request.form['Nome'])
+        valor= str(request.form['dinheiro'])
+        cpf= str(request.form['cpf'])
+        email= str(request.form['email'])
+        telefo= str(request.form['Telefone'])
+        endereco= str(request.form['Endereco'])
+        complemento= str(request.form['Complemento'])
+        estado= str(request.form['Estado'])
+        cep= str(request.form['CEP'])
+        formaPagamento= str(request.form['Pagamento'])
+        print(formNome)
+        print(valor)
+        print(cpf)
+        print(email)
+        print(telefo)
+        print(endereco)
+        print(complemento)
+        print(estado)
+        print(cep)
+        print(formaPagamento)
+
 
     return render_template("Pedido.html")
 

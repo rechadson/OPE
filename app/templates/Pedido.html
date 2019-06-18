@@ -5,7 +5,8 @@
 
 {% block content %}
 <div class="container">
-  <div class="py-5 text-center">
+  <form method="POST"action="../Pedido/cadastrar">
+  <div class="py-2 text-center">
     <h2>Pedido</h2>
   </div>
 
@@ -27,11 +28,13 @@
         </li>
         {%endfor%}
         
-        <li class="list-group-item d-flex justify-content-between">
-          <span>Total (R$)</span>
-
-          <label for="dinheiro">R$</label>
-          <input type="text" id="dinheiro" name="dinheiro" class="dinheiro form-control" value = "R$ {{orcamento}}" style="display:inline-block" />
+        <li class="list-group-item">
+          <span>Total do Orçamento </span>
+          <input type="text"  name="dinheiro" class="form-control" value = "{{orcamento}}" readonly="readonly">
+        </li>
+        <li class="list-group-item">
+            <span>Total R$ </span>
+            <input type="text"  name="dinheiro" class="dinheiro form-control" value = "{{orcamento}}">
         </li>
         
         <li class="list-group-item d-flex justify-content-between">
@@ -49,73 +52,66 @@
       <h4 class="mb-3">Dados do comprador</h4>
       <form class="needs-validation" novalidate>
         <div class="row">
-          <div class="col-md-10 mb-3">
-            
-            <label for="Nome">Nome Completo</label>
-            <input type="text" class="form-control" id="Nome" placeholder="" value="" required>
-            <div class="invalid-feedback">
-              Valid first name is required.
-            </div>
-          </div>
+          <div class="col-md-4 mb-3">
+              <label for="cpf">CPF</label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="cpf" name="cpf"placeholder="Ex: 123.456.789-00" required value="">
+                <div class="invalid-feedback">
+                    CPF é Obrigatório
+                  </div>
+              </div>
         </div>
 
-        <div class="mb-3">
-          <label for="username">CPF</label>
-          <div class="input-group">
-            <input type="text" class="form-control" id="cpf" placeholder="12345678900" required value="">
-            <div class="invalid-feedback" style="width: 100%;">
-              Your username is required.
-            </div>
+        <div class="col-md-10 mb-3">
+            <label for="Nome">Nome Completo</label>
+            <input type="text" class="form-control" id="Nome" name="Nome" placeholder="" value="" required>
+            <div class="invalid-feedback">
+                Nome é Obrigatório
+              </div>
           </div>
         </div>
 
         <div class="mb-3">
           <label for="email">Email <span class="text-muted">(Opcional)</span></label>
-          <input type="email" class="form-control" id="email" placeholder="you@example.com" >
-          <div class="invalid-feedback">
-            Please enter a valid email address for shipping updates.
-          </div>
+          <input type="email" class="form-control" id="email" name="email" placeholder="Ex: you@example.com" >
         </div>
-
         <div class="mb-3">
-          <label for="address">Endereço</label>
-          <input type="text" class="form-control" id="address" placeholder="Rua japão 144" required value="">
+            <label for="Telefone">Telefone</label>
+            <input type="text" class="form-control" id="Telefone" name="Telefone" placeholder="Ex: 1199999-9999" >
+          </div>
+        <div class="mb-3">
+          <label for="Endereco">Endereço</label>
+          <input type="text" class="form-control" id="Endereco" name="Endereco" placeholder="Ex: Rua japão 144" required value="">
           <div class="invalid-feedback">
-            Please enter your shipping address.
+            Endereço é Obrigatório
           </div>
         </div>
         
         <div class="mb-3">
-          <label for="address2">Complemento<span class="text-muted">(Optional)</span></label>
-          <input type="text" class="form-control" id="address2" placeholder="Apartamento">
+          <label for="Complemento">Complemento<span class="text-muted">(Opcional)</span></label>
+          <input type="text" class="form-control" id="Complemento" name="Complemento" placeholder="Ex: Apartamento">
         </div>
 
         <div class="row">
           <div class="col-md-5 mb-3">
-            <label for="country">Pais</label>
-            <select class="custom-select d-block w-100" id="country" required>
-              <option value="">Choose...</option>
-              <option>United States</option>
-            </select>
-            <div class="invalid-feedback">
-              Please select a valid country.
-            </div>
+              <label for="Estado">Estado</label>
+              <input type="text" class="form-control" id="Estado" name="Estado" placeholder="EX: São Paulo"required>
+              <div class="invalid-feedback">
+                  Estado Obrigatório.
+                </div>
           </div>
           <div class="col-md-4 mb-3">
-            <label for="state">Estado</label>
-            <select class="custom-select d-block w-100" id="state" required>
-              <option value="">Choose...</option>
-              <option>California</option>
-            </select>
-            <div class="invalid-feedback">
-              Please provide a valid state.
-            </div>
+              <label for="Cidade">Cidade</label>
+              <input type="text" class="form-control" id="Cidade" placeholder="Ex: Mauá" name="Cidade"required>
+              <div class="invalid-feedback">
+                  Cidade é Obrigatório.
+                </div>
           </div>
           <div class="col-md-3 mb-3">
             <label for="CEP">CEP</label>
-            <input type="text" class="form-control" id="CEP" placeholder="" required>
+            <input type="text" class="form-control" id="CEP" name="CEP" placeholder="Ex: 09300-000" required>
             <div class="invalid-feedback">
-              Zip code required.
+              CEP é Obrigatório.
             </div>
           </div>
         </div>
@@ -126,15 +122,15 @@
 
         <div class="d-block my-3">
           <div class="custom-control custom-radio">
-            <input id="credit" name="paymentMethod" type="radio" class="custom-control-input" checked required>
+            <input id="credit" name="Pagamento" type="radio" class="custom-control-input" checked required>
             <label class="custom-control-label" for="credit">Cartão de Credito</label>
           </div>
           <div class="custom-control custom-radio">
-            <input id="debit" name="paymentMethod" type="radio" class="custom-control-input" required>
+            <input id="debit" name="Pagamento" type="radio" class="custom-control-input" required>
             <label class="custom-control-label" for="debit">Cartão de Debito</label>
           </div>
           <div class="custom-control custom-radio">
-            <input id="paypal" name="paymentMethod" type="radio" class="custom-control-input" required>
+            <input id="paypal" name="Pagamento" type="radio" class="custom-control-input" required>
             <label class="custom-control-label" for="paypal">Dinheiro</label>
           </div>
         </div>
@@ -145,13 +141,7 @@
     </div>
   </div>
 
-  <footer class="my-5 pt-5 text-muted text-center text-small">
-    
-    <ul class="list-inline">
-      <li class="list-inline-item"><a href="#">Privacy</a></li>
-      <li class="list-inline-item"><a href="#">Terms</a></li>
-      <li class="list-inline-item"><a href="#">Support</a></li>
-    </ul>
-  </footer>
+  
+</form>
 </div>
 {% endblock %}

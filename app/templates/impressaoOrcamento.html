@@ -2,28 +2,28 @@
 {% block head %}
 {% endblock %}
 {% block content %}
-<div class="container">
+<div class="container my-4">
     <div class="row">
-        <div class="col-sm-8">
+        <div class="col-sm-4">
             <h1>Orçamento</h1>
             <h3>Nº {{orcamento}}</h3>
         </div>
-            <div class="col-sm-4">
-                    <div class="row">
-                            <div class="col-sm"><h6 class="text-right">R.M.S.J. GLASS - 30.224.690/0001-23</h6></div>        
-                    </div>
-                    <div class="row">
-                            <div class="col-sm"><h6 class="text-right">Avenida raimundo eduardo da silva, 540 - Jardim zaira</h6></div>        
-                    </div>
-                    <div class="row">
-                            <div class="col-sm"><h6 class="text-right">Mauá - São Paulo 09321-170</h6></div>        
-                    </div>
-                    <div class="row">
-                            <div class="col-sm"><h6 class="text-right">Rmsjvidros@gmail.com</h6></div>        
-                    </div>
-                    <div class="row">
-                            <div class="col-sm"><h6 class="text-right">(11) 4519-8241 / (11) 99567-6240</h6></div>        
-                    </div>
+            <div class="col-sm-8">
+                <div class="row">
+                                <div class="col-sm"><h6 class="text-right">R.M.S.J. GLASS - 30.224.690/0001-23</h6></div>        
+                        </div>
+                        <div class="row">
+                                <div class="col-sm"><h6 class="text-right">Avenida Raimundo Eduardo da Silva, 540 - Jardim Zaira</h6></div>        
+                        </div>
+                        <div class="row">
+                                <div class="col-sm"><h6 class="text-right">Mauá - São Paulo 09321-170</h6></div>        
+                        </div>
+                        <div class="row">
+                                <div class="col-sm"><h6 class="text-right">Rmsjvidros@gmail.com</h6></div>        
+                        </div>
+                        <div class="row">
+                                <div class="col-sm"><h6 class="text-right">(11) 4519-8241 / (11) 99567-6240</h6></div>        
+                </div>                   
             </div>
         </div>
         <hr class="style12">
@@ -37,13 +37,27 @@
             <div class="col-sm"><h6 class="text-center">{{carrinho[0].nome}}</h6></div>
     </div>
     {%endfor%}
-    
+    <hr class="style12">
     <div class="row">
             <div class="col-10 col-md-2">Total {{total}} </div>
             <div class="col-sm"><h6 class="text-right"></h6></div>
     </div>
+    <hr class="style12">
+    <div class="row">
+        <div class="col-sm">
+                <div class="row">
+                                <div class="col-sm"><h6 class="text-left">Data do Orçamento {{data}}</h6></div>        
+                        </div>
+                        <div class="row">
+                                <div class="col-sm"><h6 class="text-left">Valido até {{datafim}}</h6></div>        
+                        </div>
+                        <div class="row">
+                                <div class="col-sm"><h6 class="text-left">Previsão de entrega: 12 dias úteis após solicitação do pedido</h6></div>        
+                </div>
+        </div>
+   </div>
     <form>
-        <input type="button" value="Print this page" onClick="window.print()"/>
+        <input type="button" value="Imprimir Orçamento" onClick="window.print()"/>
     </form>
-  
+</div>
 {% endblock %}

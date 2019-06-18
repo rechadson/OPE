@@ -1,6 +1,9 @@
 $(function()
 {   
-    $('.dinheiro').mask('###.###.##0,00',{reverse: true});
+    $('.dinheiro').focus(function()
+    {
+        $('.dinheiro').mask('###.###.##0,00',{reverse: true});
+    });
     $( "#cnpj" ).focus(function() {
         $("#cnpj").mask("99.999.999/9999-99");
 
