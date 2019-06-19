@@ -15,6 +15,12 @@
                 <option>{{ Produto.nome }}</option>
                 {% endfor %}
               </select>
+              <div id="Metragem"class="invisible col-md-6 mb-3">
+                  <span>Quantidade de metros</span>
+                  <div class="input-group-append">
+                      <input type="text"  id="metragemitem" name="metragem" class="form-control my-2" value = "">
+                </div>
+              </div>
               <button class="btn btn-primary" type="button"  id="addInput">Adicionar</button>
   </form>
   </div>
@@ -40,12 +46,19 @@
         </li>
      
       </ul>
+      <div class="input-group my-2">
+          <span>Quantidade de dias úteis para entrega </span>
+          <div class="input-group-append">
+              <input type="text"  id="diasEntrega" name="dataEntrega" class="form-control my-2" value = "">
+        </div>
+      </div>
       
-        <div class="input-group">
+      <div class="input-group">
             <div class="input-group-append">
             <button type="button" class="btn btn-secondary" id="gerar">Gerar Orçamento</button>
           </div>
         </div>
+        
   </div>
   </form>
   

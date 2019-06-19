@@ -48,6 +48,16 @@ def Orcamento():
     
     return render_template('orcamento.html',produtos = tables.Produtos.getAllProduto())
 
+@app.route("/categoria/produto/", methods=["GET","POST"])
+def Calcularmetragem():
+    produtos = tables.Produtos.getAllProduto()
+    prod =  str(request.form['prod'])
+    for produto in produtos:
+        categoria = tables.CategoriaProduto.getCategoriaByID(produto.categoria_id)
+        print(categoria.CalcularMetragem)
+        if categoria.CalcularMetragem:
+            return jsonify({"Metragem":"Calcular"})
+        return jsonify({"Metragem":"NaoCalcular"})
 @app.route("/adicionar/produto/", methods=["GET","POST"])
 def AdicionarProduto():
     locale.localeconv()['currency_symbol']
@@ -167,9 +177,9 @@ def Deletar_cliente(cpf):
             cur = conn.cursor()
             print("iniciar o delete")
             print(cpf)
-            OrcamentoCliente = tables.Orcamento.getClienteOrcamento(cpf)
+            OrcamentoCliente = tables.Pedido.getPedidobycliente(cpf)
             if OrcamentoCliente:
-                flash("Cliente não pode ser deletado por existe orçamento vinculado")
+                flash("Cliente não pode ser deletado por existir Pedido vinculado")
                 return redirect(url_for('Cadastrar_cliente'))
             cur.execute('DELETE FROM Cliente WHERE CPF = ?',(cpf, ))
             conn.commit()
@@ -194,27 +204,31 @@ def Cadastrar_produto():
     if form.validate_on_submit():
         formNome= str(form.nome.data)
         formPreco = str(form.preco.data)
-        formFornecedor = str(form.fornecedor.data)
+        formFornecedor = str(request.form['fornecedor'])
         preco=formPreco.replace(".","")
         preco=preco.replace(",",".")
         categoria = str(request.form['categoria'])
         try:
-            print("aqui foi")
-            print(preco)
-            print(formFornecedor)
-            if tables.Produtos.insertProduto(formNome,preco,formFornecedor,categoria):
-                flash("Produto cadastrado com Sucesso")
-                return redirect(url_for('Cadastrar_produto'))
-            flash('CNPJ do fornecedor não encontrado')
-            return render_template("produto.html", ProdutoForm=form, cadastrar=True,categorias=tables.CategoriaProduto.getCategoria())
+            
+            if tables.Fornecedor.getFornecedorByNome(formFornecedor):
+                categoria = tables.CategoriaProduto.getCategoriaByname(categoria)
+                idcategoria=int(categoria.id)
+                for fornecedor in tables.Fornecedor.getFornecedorByNome(formFornecedor):
+                    fornecedorCNPJ = fornecedor.cnpj
+                   
+                if tables.Produtos.insertProduto(formNome,preco,idcategoria,fornecedorCNPJ,):
+                    flash("Produto cadastrado com Sucesso")
+                    return redirect(url_for('Cadastrar_produto'))
+                flash('CNPJ do fornecedor não encontrado')
+            return render_template("produto.html", ProdutoForm=form, cadastrar=True,categorias=tables.CategoriaProduto.getCategoria(),fornecedores=tables.Fornecedor.getAllFornecedor())
         except:
             print("erro aqui")
             flash('CNPJ do fornecedor não encontrado')
-            return render_template("produto.html", ProdutoForm=form, cadastrar=True,categorias=tables.CategoriaProduto.getCategoria())
+            return render_template("produto.html", ProdutoForm=form, cadastrar=True,categorias=tables.CategoriaProduto.getCategoria(),fornecedores=tables.Fornecedor.getAllFornecedor())
         
         
 
-    return render_template("produto.html", ProdutoForm=form, cadastrar=True,categorias=tables.CategoriaProduto.getCategoria())
+    return render_template("produto.html", ProdutoForm=form, cadastrar=True,categorias=tables.CategoriaProduto.getCategoria(),fornecedores=tables.Fornecedor.getAllFornecedor())
 @app.route("/produto/deletar/<id>", methods=["GET","POST"])
 def DeletarProduto(id):
     print("aqui foi")
@@ -268,7 +282,7 @@ def Pesquisar_produto():
             except:
                 flash('Produto não encontrado')
                 return redirect(url_for('Pesquisar_produto'))
-        
+    print("aqui foi")   
     return render_template('produto.html',ProdutoForm=form,cadastrar=False,produtos=tables.Produtos.getAllProduto())
 
 
@@ -280,6 +294,9 @@ def Pesquisar_cliente():
     if form.validate_on_submit():
         formCpf = str(form.cpf.data)
         client=tables.Cliente.getCliente(formCpf)
+        print(client)
+        if client == []:
+            print("cliente vazio")
         if client:
             return render_template('cliente.html',ClienteForm=form,cadastrar=False,pesquisa=True,clientes=tables.Cliente.getCliente(formCpf))
         
@@ -315,12 +332,16 @@ def atualizar_produto(id):
         formPreco = formPreco.replace('.','')
         formPreco = formPreco.replace(',','.')
         formFornecedor = str(request.form["fornecedor"])
+        categoria = str(request.form['categoria'])
+        categoria = tables.CategoriaProduto.getCategoriaByname(categoria)
+        idcategoria=int(categoria.id)
         fornecedorCnpj = tables.Fornecedor.getFornecedorByNome(formFornecedor)
-        for id in fornecedorCnpj:
-            Fornecedor=id.cnpj
+        for idfornecedor in fornecedorCnpj:
+            Fornecedor=idfornecedor.cnpj
         if fornecedorCnpj:
+            print(formNome)
             flash("Produto "+formNome+" atualizado com Sucesso")
-            tables.Produtos.setProduto(formNome,formPreco,Fornecedor)
+            tables.Produtos.setProduto(id,formNome,formPreco,idcategoria,Fornecedor)
             return redirect(url_for('Pesquisar_produto'))
         else:
             return render_template('produto.html',ProdutoForm=form,cadastrar=False,pesquisa=True,atualizar=True,produtos=tables.Produtos.getProduto(formNome))
@@ -334,9 +355,11 @@ def Cadastrar_Orcamento():
         dados = request.get_json()
         total = dados["Total"]
         data = date.today()
+        dataEntrega = int(dados["DiasEntrega"])
+        print(dataEntrega)
         #data=data.strftime("%d/%m/%y")
         try:
-            codigoGerado = tables.Orcamento.insertOrcamento(total,data)
+            codigoGerado = tables.Orcamento.insertOrcamento(total,data,dataEntrega)
             print("aqui foi")
             print(codigoGerado)
             if(codigoGerado!=""):
@@ -372,10 +395,11 @@ def RelatorioPesquisar():
 def imprimirOrcamento(codigoOrcamento):
     try:
         orcamento = tables.Orcamento.getOrcamento(codigoOrcamento)
-        for precoOrcamento in orcamento:
-            preco = locale.currency(precoOrcamento.preco, grouping=True)
-            codOrcamento = precoOrcamento.id
-            data = precoOrcamento.data
+        for intem in orcamento:
+            preco = locale.currency(intem.preco, grouping=True)
+            codOrcamento = intem.id
+            data = intem.data
+            diasEntrega = int(intem.prazoEntrega)
             datafim = date.fromordinal(data.toordinal()+15)
             data = data.strftime("%d/%m/%Y")
             datafim = datafim.strftime("%d/%m/%Y")
@@ -388,7 +412,7 @@ def imprimirOrcamento(codigoOrcamento):
                 for cod in codProduto:
                     produtos.append(tables.Produtos.getProdutoID(cod.Produto_id))
             
-                return render_template("impressaoOrcamento.html",cart=produtos,total=preco,orcamento=codOrcamento,data=data,datafim=datafim)
+                return render_template("impressaoOrcamento.html",cart=produtos,total=preco,orcamento=codOrcamento,data=data,datafim=datafim,diasEntrega=diasEntrega)
         return redirect(url_for('Orcamento'))
     except OSError as err:
         print("OS error: {0}".format(err))
@@ -415,34 +439,57 @@ def Pedido(codigoOrcamento):
             for cod in codProduto:
                 produtos.append(tables.Produtos.getProdutoID(cod.Produto_id))
          
-            return render_template("Pedido.html",cart=produtos,orcamento=preco,codigoOrcamento=codigoOrcamento)
+            return render_template("Pedido.html",cart=produtos,orcamento=preco,codigoOrcamento=codigoOrcamento,codigo=True)
         return redirect(url_for('Orcamento'))
     return render_template("Pedido.html")   
 
 @app.route("/Pedido/cadastrar/", methods=["GET","POST"])
 def CadastrarPedido():
+    print("aqui foi")
     if request.method == 'POST':
         formNome= str(request.form['Nome'])
         valor= str(request.form['dinheiro'])
+        valor=valor.replace("R$","")
+        valor=valor.replace(".","")
+        valor=valor.replace(",",".")
         cpf= str(request.form['cpf'])
         email= str(request.form['email'])
-        telefo= str(request.form['Telefone'])
+        telefone= str(request.form['Telefone'])
         endereco= str(request.form['Endereco'])
         complemento= str(request.form['Complemento'])
+        cidade= str(request.form['Cidade'])
         estado= str(request.form['Estado'])
         cep= str(request.form['CEP'])
         formaPagamento= str(request.form['Pagamento'])
-        print(formNome)
-        print(valor)
-        print(cpf)
-        print(email)
-        print(telefo)
-        print(endereco)
-        print(complemento)
-        print(estado)
-        print(cep)
-        print(formaPagamento)
+        codigoOrcamento = int(request.form['codOrcamento'])
+        data=date.today()
+        try:
+            cliente = tables.Cliente.getCliente(cpf)
+            if cliente == []:
+                print("cliente vazio")
+                tables.Cliente.insertCliente(formNome,cpf,telefone,endereco,cidade,estado,complemento,cep)
+            orcamento = tables.Orcamento.getOrcamento(codigoOrcamento)
+            for dataorcamento in orcamento:
+                data = dataorcamento.data
+                datamaxima = date.fromordinal(data.toordinal()+15)
+                print(datamaxima)
+            if datamaxima>date.today():
+                flash("Orçamento "+str(codigoOrcamento)+" Está com mais de 15 dias após gerado")
+                return render_template("Pedido.html")
 
+            pedido = tables.Pedido.getPedidobyOrcamento(codigoOrcamento)
+            if pedido:
+                print("pedido colocado")
+                flash("Orçamento "+str(codigoOrcamento)+" já foi utilizado em outro pedido")
+                return render_template("Pedido.html")
+            print("não tem pedido")
+            print()
+            tables.Pedido.cadastrarPedido(codigoOrcamento,cpf,data,valor)
+            flash("Pedido realizado com Sucesso")
+            return render_template("Pedido.html")
+        except:
+            flash("Falha ao gerar pedido tente novamente")
+            return render_template("Pedido.html")
 
     return render_template("Pedido.html")
 

@@ -11,16 +11,16 @@ class Produtos(db.Model):
     categoria = db.relationship('CategoriaProduto',foreign_keys=categoria_id)
     fornecedor_cnpj = db.Column(db.String,db.ForeignKey('Fornecedor.cnpj'))
     fornecedor = db.relationship('Fornecedor',foreign_keys=fornecedor_cnpj)
-    def __init__(self,nome,preco,fornecedor_cnpj,Categoria):
+    def __init__(self,nome,preco,categoria_id,fornecedor_cnpj):
         self.nome = nome
         self.preco = preco
+        self.categoria_id = categoria_id
         self.fornecedor_cnpj = fornecedor_cnpj
-        self.Categoria = Categoria
-    def insertProduto(nome,preco,fornecedor_cnpj,Categoria):
-        print(fornecedor_cnpj)
-        fornecedor = Fornecedor.query.filter_by(cnpj = fornecedor_cnpj).all()
+        
+    def insertProduto(nome,preco,categoria_id,fornecedor_cnpj):
+        fornecedor = Fornecedor.query.filter_by(cnpj = fornecedor_cnpj).first()
         if fornecedor:
-            inserir = Produtos(nome,preco,fornecedor_cnpj,Categoria)
+            inserir = Produtos(nome,preco,categoria_id,fornecedor_cnpj)
             db.session.add(inserir)
             db.session.commit()
             return True
@@ -30,12 +30,13 @@ class Produtos(db.Model):
        
         return produto
     
-    def setProduto(nome,preco,fornecedor_cnpj,Categoria):
-        produto = Produtos.query.filter_by(nome = nome).first()
+    def setProduto(id,nome,preco,categoria_id,fornecedor_cnpj):
+        produto = Produtos.query.filter_by(id = id).first()
+        print(produto)
         produto.nome = nome
         produto.preco = preco
         produto.fornecedor_cnpj = fornecedor_cnpj
-        produto.Categoria = Categoria
+        produto.categoria_id = categoria_id
         db.session.commit()
     def getProdutoByFornecedor(fornecedor_cnpj):
         produto = Produtos.query.filter_by(fornecedor_cnpj = fornecedor_cnpj).all()
@@ -68,8 +69,10 @@ class Cliente(db.Model):
         self.Complemento = Complemento
         self.CEP = CEP
     def insertCliente(nome,CPF,telefone,Endereco,Cidade,Estado,Complemento,CEP):
+        print("aqui foi cliente")
         inserir = Cliente(nome,CPF,telefone,Endereco,Cidade,Estado,Complemento,CEP)
         db.session.add(inserir)
+        print("aqui inserindo cliente")
         db.session.commit()
 
     def getAllCliente():
@@ -101,6 +104,7 @@ class Orcamento(db.Model):
     def __init__(self,preco,data,prazoEntrega):
         self.preco = preco
         self.data = data
+        self.prazoEntrega = prazoEntrega
     def getAllorcamento():
         orcamento = Orcamento.query.all()
         return orcamento
@@ -112,7 +116,7 @@ class Orcamento(db.Model):
         orcamento = Orcamento.query.all()
         return orcamento[-1].id
     def insertOrcamento(preco,data,prazoEntrega):
-        inserir = Orcamento(preco,data)
+        inserir = Orcamento(preco,data,prazoEntrega)
         print("inserindo orçamento")
         print(inserir)
         db.session.add(inserir)
@@ -154,17 +158,34 @@ class Pedido(db.Model):
     orcamento = db.relationship('Orcamento',foreign_keys=orcamento_id)
     cliente_cpf = db.Column(db.String,db.ForeignKey('Cliente.CPF'))
     cliente = db.relationship('Cliente',foreign_keys=cliente_cpf)
+    data = db.Column(db.Date)
     valor = db.Column(db.Float)
 
-    def __init__(self,orcamento_id,cliente_cpf,valor):        
+    def __init__(self,orcamento_id,cliente_cpf,data,valor):        
         self.orcamento_id = orcamento_id
         self.cliente_cpf = cliente_cpf
+        self.data = data
         self.valor = valor
     
-    def cadastrarPedido(orcamento_id,cliente_cpf,valor):
-        inserir = Pedido(orcamento_id,cliente_cpf,valor)
+    def cadastrarPedido(orcamento_id,cliente_cpf,data,valor):
+        print("inserindo pedido")
+        print(orcamento_id)
+        print(cliente_cpf)
+        print(data)
+        inserir = Pedido(orcamento_id,cliente_cpf,data,valor)
         db.session.add(inserir)
+        print("pedido inserido")
         db.session.commit()
+
+    def getPedidobyOrcamento(orcamento_id):
+        pedido = Pedido.query.filter_by(orcamento_id = orcamento_id).first()
+        return pedido
+
+    def getPedidobycliente(cliente_cpf):
+        pedido = Pedido.query.filter_by(cliente_cpf = cliente_cpf).first()
+        return pedido
+    
+
 
 class Fornecedor(db.Model):
     __tablename__ = "Fornecedor"
@@ -233,6 +254,11 @@ class CategoriaProduto(db.Model):
     def getCategoriaByname(Categoria):
         categoria = CategoriaProduto.query.filter_by(Categoria = Categoria).first()
         
+        return categoria
+    def getCategoriaByID(id):
+        print("procurando categoria")
+        categoria = CategoriaProduto.query.filter_by(id = id).first()
+       
         return categoria
     def getCategoria():
         categoria = CategoriaProduto.query.all()

@@ -5,7 +5,14 @@
 
 {% block content %}
 <div class="container">
-  <form method="POST"action="../Pedido/cadastrar">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <p class="alert alert-danger">{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+    {% endwith %} 
+  <form method="POST"action="../Pedido/cadastrar/">
   <div class="py-2 text-center">
     <h2>Pedido</h2>
   </div>
@@ -20,7 +27,7 @@
         {%for carrinho in cart%}
          <li class="list-group-item d-flex justify-content-between lh-condensed">
           <div>
-            <h3 class="my-0">{{carrinho[0].nome}}</h3>
+            <h5 class="my-1">{{carrinho[0].nome}}</h5>
             <h6 class="my-0">Código do produto</h6>
             <small class="text-muted">{{carrinho[0].id}}</small>
           </div>
@@ -39,7 +46,7 @@
         
         <li class="list-group-item d-flex justify-content-between">
           <label>Codigo Orçamento</label>
-            <input type="text" class="form-control" id="codOrcamento" placeholder="" required value="{{codigoOrcamento}}">
+            <input type="text" class="form-control" name ="codOrcamento"id="codOrcamento" placeholder="" required value="{{codigoOrcamento}}" {%if codigo%}readonly="readonly"{%endif%}>
         </li>
             <li class="list-group-item d-flex justify-content-between">
         
@@ -122,16 +129,16 @@
 
         <div class="d-block my-3">
           <div class="custom-control custom-radio">
-            <input id="credit" name="Pagamento" type="radio" class="custom-control-input" checked required>
-            <label class="custom-control-label" for="credit">Cartão de Credito</label>
+            <input id="credito" name="Pagamento" type="radio" class="custom-control-input" value="credito" checked>
+            <label class="custom-control-label" for="credito">Cartão de Credito</label>
           </div>
           <div class="custom-control custom-radio">
-            <input id="debit" name="Pagamento" type="radio" class="custom-control-input" required>
-            <label class="custom-control-label" for="debit">Cartão de Debito</label>
+            <input id="debito" name="Pagamento" type="radio" class="custom-control-input" value="debito">
+            <label class="custom-control-label" for="debito">Cartão de Debito</label>
           </div>
           <div class="custom-control custom-radio">
-            <input id="paypal" name="Pagamento" type="radio" class="custom-control-input" required>
-            <label class="custom-control-label" for="paypal">Dinheiro</label>
+            <input id="dinheiro" name="Pagamento" type="radio" class="custom-control-input" value="dinheiro">
+            <label class="custom-control-label" for="dinheiro">Dinheiro</label>
           </div>
         </div>
         

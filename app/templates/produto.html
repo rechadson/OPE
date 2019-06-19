@@ -28,7 +28,12 @@
 
     <div class="form-group">
         <label for="fornecedor">Fornecedor</label>
-        {{ ProdutoForm.fornecedor(type="fornecedor",class="form-control", id="cnpj", placeholder="CNPJ do fornecedor") }}
+        <select class="custom-select mr-sm-2" id="fornecedor" name="fornecedor">
+          
+            {% for fornecedor in fornecedores %}
+            <option>{{ fornecedor.nome }}</option>
+            {% endfor %}
+          </select>
     </div>
 
    
@@ -82,7 +87,7 @@
       </div>
   
       <div class="form-group">
-        {{ ProdutoForm.fornecedor(type="fornecedor",class="form-control", id="cnpj", placeholder="fornecedor",style="display:none", value="1") }}
+          <input type="fornecedor" class="form-control" id="cnpj" name="fornecedor" value="1"readonly="readonly" style="display:none">
      </div>
 
       {%endif%}

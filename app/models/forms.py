@@ -21,5 +21,5 @@ class ClienteForm(FlaskForm):
 class ProdutoForm(FlaskForm):
     nome = StringField("nome",validators=[DataRequired()])
     preco = StringField("preco",validators=[DataRequired()])
-    fornecedor = StringField("fornecedor_id",validators=[DataRequired()])
+    
 

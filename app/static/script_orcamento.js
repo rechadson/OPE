@@ -3,6 +3,26 @@ $(function () {
 	$('#total').mask('###.###.##0,00',{reverse: true});
 	var scntDiv = $('.produto');
 	var carrinhos = $('.container');
+	
+	$('#inlineFormCustomSelect').change(function() {
+		$.ajax({
+		url: '/categoria/produto/',
+		data: $('#formprod').serialize(),
+		type: 'POST',
+		success: function(response) {
+			console.log(response.Metragem)
+			if(response.Metragem == "Calcular"){
+			$("#Metragem").attr("class", "visible col-md-6 mb-3")
+			
+		}else{
+			$("#Metragem").attr("class", "invisible col-md-6 mb-3")
+		}
+		},
+		error: function(error) {
+			console.log(error);
+		}
+		});
+	});
 $(document).on('click', '#addInput', function () {
 $.ajax({
 url: '/adicionar/produto/',
@@ -75,6 +95,7 @@ error: function(error) {
 		
 		json["nomeProduto"] = ListarProdutos();
 		json["Total"]=$('#total').text();
+		json["DiasEntrega"]=$("#diasEntrega").val();
 		function ListarProdutos(){
             var produto= Array();
 			var produtos = $('#cart');
