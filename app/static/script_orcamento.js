@@ -6,16 +6,18 @@ $(function () {
 	
 	$('#inlineFormCustomSelect').change(function() {
 		$.ajax({
-		url: '/categoria/produto/',
+		url: '/metragem/produto/',
 		data: $('#formprod').serialize(),
 		type: 'POST',
 		success: function(response) {
 			console.log(response.Metragem)
 			if(response.Metragem == "Calcular"){
-			$("#Metragem").attr("class", "visible col-md-6 mb-3")
-			
-		}else{
+			$("#Metragem").attr("class", "visible col-md-6 mb-3")	
+		}
+		if(response.Metragem == "NaoCalcular"){
+			$("#metragemitem").val("1")
 			$("#Metragem").attr("class", "invisible col-md-6 mb-3")
+			
 		}
 		},
 		error: function(error) {
@@ -45,7 +47,11 @@ success: function(response) {
         var carrinhoAtual = $(this);
         var valorItem = carrinhoAtual.find('.dinheiro');
         var resultado = 0;
-
+		var moeda;
+		var c;
+		var n;
+		var d;
+		var t;
         valorItem.each(function(){
 			var arredondar;
 			var tdAtual = $(this).text().replace('R$','');
@@ -55,9 +61,12 @@ success: function(response) {
 			arredondar= Math.round(resultado * 100);
 			resultado = Math.ceil(arredondar)/100;
 		});
+		n = resultado;
+		c = isNaN(c = Math.abs(c)) ? 2 : c, d = d == undefined ? "," : d, t = t == undefined ? "." : t, s = n < 0 ? "-" : "", i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", j = (j = i.length) > 3 ? j % 3 : 0;
+    	moeda = s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+
+		$('#total').text(moeda);
 		
-		$('#total').text(resultado);
-		$("#total").maskMoney({symbol:'R$ ',showSymbol:true, thousands:'.', decimal:',', symbolStay: true});
 		
 		
     });

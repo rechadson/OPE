@@ -1,5 +1,6 @@
+
 $(function()
-{       $('.dinheiro').toFixed(2)
+{      
         $('.dinheiro').mask('###.###.##0,00',{reverse: true});
     
     $( "#cnpj" ).focus(function() {

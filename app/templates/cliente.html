@@ -32,6 +32,34 @@
         {{ ClienteForm.endereco(type="endereco",class="form-control", id="endereco", placeholder="Rua Exemplo, 144") }}
     </div>
    
+        <div class="mb-3">
+          <label for="Complemento">Complemento<span class="text-muted">(Opcional)</span></label>
+          <input type="text" class="form-control" id="Complemento" name="Complemento" placeholder="Ex: Apartamento">
+        </div>
+
+        <div class="row">
+          <div class="col-md-5 mb-3">
+              <label for="Estado">Estado</label>
+              <input type="text" class="form-control" id="Estado" name="Estado" placeholder="EX: São Paulo"required>
+              <div class="invalid-feedback">
+                  Estado Obrigatório.
+                </div>
+          </div>
+          <div class="col-md-4 mb-3">
+              <label for="Cidade">Cidade</label>
+              <input type="text" class="form-control" id="Cidade" placeholder="Ex: Mauá" name="Cidade"required>
+              <div class="invalid-feedback">
+                  Cidade é Obrigatório.
+                </div>
+          </div>
+          <div class="col-md-3 mb-3">
+            <label for="CEP">CEP</label>
+            <input type="text" class="form-control" id="CEP" name="CEP" placeholder="Ex: 09300-000" required>
+            <div class="invalid-feedback">
+              CEP é Obrigatório.
+            </div>
+          </div>
+        </div>
      <button type="submit" class="btn btn-primary" action="/cliente/cadastrar/">Enviar</button>
   </form>
   
@@ -68,8 +96,34 @@
       <label for="endereco">Endereço</label>
       <input type="endereco" class="form-control" id="endereco" name="endereco" value="{{fon.Endereco}}">
     </div>
-    
-    
+        <div class="mb-3">
+          <label for="Complemento">Complemento<span class="text-muted">(Opcional)</span></label>
+          <input type="text" class="form-control" id="Complemento" name="Complemento" placeholder="Ex: Apartamento" value="{{fon.Complemento}}">
+        </div>
+
+        <div class="row">
+          <div class="col-md-5 mb-3">
+              <label for="Estado">Estado</label>
+              <input type="text" class="form-control" id="Estado" name="Estado" placeholder="EX: São Paulo"value="{{fon.Estado}}"required>
+              <div class="invalid-feedback">
+                  Estado Obrigatório.
+                </div>
+          </div>
+          <div class="col-md-4 mb-3">
+              <label for="Cidade">Cidade</label>
+              <input type="text" class="form-control" id="Cidade" placeholder="Ex: Mauá" name="Cidade"value="{{fon.Cidade}}"required>
+              <div class="invalid-feedback">
+                  Cidade é Obrigatório.
+                </div>
+          </div>
+          <div class="col-md-3 mb-3">
+            <label for="CEP">CEP</label>
+            <input type="text" class="form-control" id="CEP" name="CEP" placeholder="Ex: 09300-000" value="{{fon.CEP}}"required>
+            <div class="invalid-feedback">
+              CEP é Obrigatório.
+            </div>
+          </div>
+        </div>
     <div class="form-group">
     <button type="submit" class="btn btn-primary" formaction="/cliente/deletar/{{fon.CPF}}" style={% if pesquisa %} "display:Line"{%else%}"display:none"{%endif%}>Excluir Cliente</button>
     <button type="submit" class="btn btn-primary" formaction="/cliente/atualizar/{{fon.CPF}}" style={% if pesquisa %} "display:Line"{%else%}"display:none"{%endif%}>Atualizar Cliente</button>         

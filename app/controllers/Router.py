@@ -10,6 +10,7 @@ import sys
 from app.models.tables import Orcamento
 
 locale.setlocale(locale.LC_ALL,'')
+locale.localeconv()['currency_symbol']
 @app.route("/<user><inputPassword>", methods=["POST"])
 @app.route("/", methods=["GET","POST"],defaults={"user":None,"inputPassword":None})
 def login(user,inputPassword):
@@ -48,25 +49,24 @@ def Orcamento():
     
     return render_template('orcamento.html',produtos = tables.Produtos.getAllProduto())
 
-@app.route("/categoria/produto/", methods=["GET","POST"])
+@app.route("/metragem/produto/", methods=["GET","POST"])
 def Calcularmetragem():
-    produtos = tables.Produtos.getAllProduto()
     prod =  str(request.form['prod'])
+    produtos = tables.Produtos.getProduto(prod)
     for produto in produtos:
-        categoria = tables.CategoriaProduto.getCategoriaByID(produto.categoria_id)
-        print(categoria.CalcularMetragem)
-        if categoria.CalcularMetragem:
+        if produto.metragem:
             return jsonify({"Metragem":"Calcular"})
         return jsonify({"Metragem":"NaoCalcular"})
 @app.route("/adicionar/produto/", methods=["GET","POST"])
 def AdicionarProduto():
-    locale.localeconv()['currency_symbol']
+    
     produtos = tables.Produtos.getAllProduto()
     prod =  str(request.form['prod'])
+    metragem = int(request.form['metragem'])
     for produto in produtos:
         if produto.nome == prod:
-            
-            preco=locale.currency(produto.preco, grouping=True) 
+            preco = produto.preco*metragem
+            preco=locale.currency(preco, grouping=True) 
             return jsonify({"nome":produto.nome,"preco":preco,"fornecedor":produto.fornecedor_cnpj,"id":produto.id})
     
 @app.route("/fornecedor/cadastrar/", methods=["GET","POST"])
@@ -80,6 +80,7 @@ def Cadastrar_fornecedor():
         try:
             print(formCnpj)
             tables.Fornecedor.insertFornecedor(formNome,formEmail,formCnpj)
+            flash('Fornecedor '+formNome+' cadastrado com Sucesso')
         except:
             flash('CNPJ Já cadastrado')
             return render_template('Fornecedor.html',FornecedorForm=form,cadastrar=True)
@@ -161,8 +162,12 @@ def Cadastrar_cliente():
         formCpf = str(form.cpf.data)
         formTelefone = str(form.telefone.data)
         formEndereco = str(form.endereco.data)
+        complemento= str(request.form['Complemento'])
+        cidade= str(request.form['Cidade'])
+        estado= str(request.form['Estado'])
+        cep= str(request.form['CEP'])
         try:
-            tables.Cliente.insertCliente(formNome,formCpf,formTelefone,formEndereco)
+            tables.Cliente.insertCliente(formNome,formCpf,formTelefone,formEndereco,cidade,estado,complemento,cep)
         except:
             flash('CPF já cadastrado')
             return render_template("cliente.html", ClienteForm=form, cadastrar=True)
@@ -197,9 +202,7 @@ def Deletar_cliente(cpf):
     return redirect(url_for('Cadastrar_cliente'))
     
 @app.route("/produto/cadastrar/", methods=["GET","POST"])
-def Cadastrar_produto():
-    cat=tables.CategoriaProduto.getCategoria()
-    
+def Cadastrar_produto():    
     form = forms.ProdutoForm()
     if form.validate_on_submit():
         formNome= str(form.nome.data)
@@ -207,28 +210,26 @@ def Cadastrar_produto():
         formFornecedor = str(request.form['fornecedor'])
         preco=formPreco.replace(".","")
         preco=preco.replace(",",".")
-        categoria = str(request.form['categoria'])
+        metragem = int(request.form['metragem'])
         try:
             
             if tables.Fornecedor.getFornecedorByNome(formFornecedor):
-                categoria = tables.CategoriaProduto.getCategoriaByname(categoria)
-                idcategoria=int(categoria.id)
                 for fornecedor in tables.Fornecedor.getFornecedorByNome(formFornecedor):
                     fornecedorCNPJ = fornecedor.cnpj
                    
-                if tables.Produtos.insertProduto(formNome,preco,idcategoria,fornecedorCNPJ,):
+                if tables.Produtos.insertProduto(formNome,preco,metragem,fornecedorCNPJ):
                     flash("Produto cadastrado com Sucesso")
                     return redirect(url_for('Cadastrar_produto'))
-                flash('CNPJ do fornecedor não encontrado')
-            return render_template("produto.html", ProdutoForm=form, cadastrar=True,categorias=tables.CategoriaProduto.getCategoria(),fornecedores=tables.Fornecedor.getAllFornecedor())
+                
+            return render_template("produto.html", ProdutoForm=form, cadastrar=True,fornecedores=tables.Fornecedor.getAllFornecedor())
         except:
             print("erro aqui")
             flash('CNPJ do fornecedor não encontrado')
-            return render_template("produto.html", ProdutoForm=form, cadastrar=True,categorias=tables.CategoriaProduto.getCategoria(),fornecedores=tables.Fornecedor.getAllFornecedor())
+            return render_template("produto.html", ProdutoForm=form, cadastrar=True,fornecedores=tables.Fornecedor.getAllFornecedor())
         
         
 
-    return render_template("produto.html", ProdutoForm=form, cadastrar=True,categorias=tables.CategoriaProduto.getCategoria(),fornecedores=tables.Fornecedor.getAllFornecedor())
+    return render_template("produto.html", ProdutoForm=form, cadastrar=True,fornecedores=tables.Fornecedor.getAllFornecedor())
 @app.route("/produto/deletar/<id>", methods=["GET","POST"])
 def DeletarProduto(id):
     print("aqui foi")
@@ -269,8 +270,10 @@ def Pesquisar_produto():
                 cur.execute('SELECT * FROM Produtos WHERE nome LIKE ?',("%"+formNome+"%", ))
                 produt=cur.fetchall()
                 conn.commit()
-                for linha in produt:
-                    prod.append(tables.Produtos.getProduto(linha[1]))
+                for linha in produt: 
+                    precomoeda = str(locale.currency(linha[2], grouping=True)).replace("R$","").strip(" ")
+                    fornecedor = tables.Fornecedor.getFornecedor(linha[4])
+                    prod.append([linha,precomoeda,fornecedor.nome])   
                 if produt:
                     print("aqui foi tambem")
                     print(prod)
@@ -290,37 +293,40 @@ def Pesquisar_produto():
 @app.route("/cliente/", methods=["GET","POST"])
 def Pesquisar_cliente():
     form = forms.ClienteForm()
-    
-    if form.validate_on_submit():
-        formCpf = str(form.cpf.data)
-        client=tables.Cliente.getCliente(formCpf)
-        print(client)
-        if client == []:
-            print("cliente vazio")
-        if client:
-            return render_template('cliente.html',ClienteForm=form,cadastrar=False,pesquisa=True,clientes=tables.Cliente.getCliente(formCpf))
-        
-        else:
-            return redirect(url_for('Pesquisar_cliente'))
+    try:
+        if form.validate_on_submit():
+            formCpf = str(form.cpf.data)
+            client=tables.Cliente.getCliente(formCpf)
+            print(client)
+            if client:
+                return render_template('cliente.html',ClienteForm=form,cadastrar=False,pesquisa=True,clientes=tables.Cliente.getCliente(formCpf))
+            
+            else:
+                flash('Cliente não encontrado')
+                return redirect(url_for('Pesquisar_cliente'))
+    except:
+        return render_template('cliente.html',ClienteForm=form,cadastrar=False,clientes=tables.Cliente.getAllCliente())
     return render_template('cliente.html',ClienteForm=form,cadastrar=False,clientes=tables.Cliente.getAllCliente())
-
+    
 @app.route("/cliente/atualizar/<cpf>", methods=["GET","POST"])
 def atualizar_cliente(cpf):
     form = forms.ClienteForm(request.form)
-    if request.method == 'POST':
-        formNome= str(request.form['nome'])
-        formCpf = str(request.form['cpf'])
-        formTelefone = str(request.form["telefone"])
-        formEndereco = str(request.form['endereco'])
-        
-        if form.validate_on_submit():
-            tables.Cliente.setCliente(formNome,formCpf,formTelefone,formEndereco)
+    try:
+        if request.method == 'POST':
+            formNome= str(request.form['cliente'])
+            formCpf = str(request.form['cpf'])
+            formTelefone = str(request.form["telefone"])
+            formEndereco = str(request.form['endereco'])
+            complemento= str(request.form['Complemento'])
+            cidade= str(request.form['Cidade'])
+            estado= str(request.form['Estado'])
+            cep= str(request.form['CEP'])
+            tables.Cliente.setCliente(formNome,formCpf,formTelefone,formEndereco,cidade,estado,complemento,cep)
+            flash('Cliente '+formNome+' atualizado com sucesso')
             return redirect(url_for('Pesquisar_cliente'))
-        else:
-            return render_template('cliente.html',ClienteForm=form,cadastrar=False,pesquisa=True,atualizar=True,clientes=tables.Cliente.getCliente(cpf))
-
-        
-    return render_template('cliente.html',ClienteForm=form,cadastrar=False,pesquisa=True,atualizar=True,clientes=tables.Cliente.getCliente(cpf))
+    except:
+        flash('Falaha ao atualizar cliente '+formNome+' tente novamente')
+        return render_template('cliente.html',ClienteForm=form,cadastrar=False,pesquisa=True,atualizar=True,clientes=tables.Cliente.getCliente(cpf))
 
 
 @app.route("/produto/atualizar/<id>", methods=["GET","POST"])
@@ -332,16 +338,14 @@ def atualizar_produto(id):
         formPreco = formPreco.replace('.','')
         formPreco = formPreco.replace(',','.')
         formFornecedor = str(request.form["fornecedor"])
-        categoria = str(request.form['categoria'])
-        categoria = tables.CategoriaProduto.getCategoriaByname(categoria)
-        idcategoria=int(categoria.id)
+        metragem = int(request.form['metragem'])
         fornecedorCnpj = tables.Fornecedor.getFornecedorByNome(formFornecedor)
         for idfornecedor in fornecedorCnpj:
             Fornecedor=idfornecedor.cnpj
         if fornecedorCnpj:
             print(formNome)
             flash("Produto "+formNome+" atualizado com Sucesso")
-            tables.Produtos.setProduto(id,formNome,formPreco,idcategoria,Fornecedor)
+            tables.Produtos.setProduto(id,formNome,formPreco,metragem,Fornecedor)
             return redirect(url_for('Pesquisar_produto'))
         else:
             return render_template('produto.html',ProdutoForm=form,cadastrar=False,pesquisa=True,atualizar=True,produtos=tables.Produtos.getProduto(formNome))
@@ -353,7 +357,7 @@ def atualizar_produto(id):
 def Cadastrar_Orcamento():
     if request.method == 'POST':
         dados = request.get_json()
-        total = dados["Total"]
+        total = float(dados["Total"].replace(",","."))
         data = date.today()
         dataEntrega = int(dados["DiasEntrega"])
         print(dataEntrega)
@@ -364,12 +368,12 @@ def Cadastrar_Orcamento():
             print(codigoGerado)
             if(codigoGerado!=""):
                 condId = int(codigoGerado)
-                
+                print(total)
                 for produto in dados["nomeProduto"]:
                     idProduto = tables.Produtos.getProdutoID(produto)
-                    for produto in idProduto:
-                        prodid = int(produto.id)
-                        tables.Orcamento_Produto.insertOrcamentoProduto(condId,prodid)
+                    print(idProduto.id)
+                    print(condId)
+                    tables.Orcamento_Produto.insertOrcamentoProduto(condId,idProduto.id)
             
                 return jsonify({"Resultado":"Susess","codigoOrcamento":codigoGerado})
         
@@ -411,7 +415,7 @@ def imprimirOrcamento(codigoOrcamento):
                 codProduto = tables.Orcamento_Produto.getOrcamentoProduto(codigoOrcamento)
                 for cod in codProduto:
                     produtos.append(tables.Produtos.getProdutoID(cod.Produto_id))
-            
+                print(produtos)
                 return render_template("impressaoOrcamento.html",cart=produtos,total=preco,orcamento=codOrcamento,data=data,datafim=datafim,diasEntrega=diasEntrega)
         return redirect(url_for('Orcamento'))
     except OSError as err:
@@ -430,7 +434,8 @@ def Pedido(codigoOrcamento):
    
     orcamento = tables.Orcamento.getOrcamento(codigoOrcamento)
     for precoOrcamento in orcamento:
-        preco = locale.currency(precoOrcamento.preco, grouping=True)
+        precoatual = locale.currency(precoOrcamento.preco, grouping=True)
+        preco = locale.currency(precoOrcamento.preco, grouping=True).replace("R$","").strip(" ")
         print(preco)
     if codigoOrcamento:
         if orcamento:
@@ -438,8 +443,8 @@ def Pedido(codigoOrcamento):
             codProduto = tables.Orcamento_Produto.getOrcamentoProduto(codigoOrcamento)
             for cod in codProduto:
                 produtos.append(tables.Produtos.getProdutoID(cod.Produto_id))
-         
-            return render_template("Pedido.html",cart=produtos,orcamento=preco,codigoOrcamento=codigoOrcamento,codigo=True)
+            print(produtos)
+            return render_template("Pedido.html",cart=produtos,precoOrcamento=precoatual,orcamento=preco,codigoOrcamento=codigoOrcamento,codigo=True)
         return redirect(url_for('Orcamento'))
     return render_template("Pedido.html")   
 
@@ -473,7 +478,9 @@ def CadastrarPedido():
                 data = dataorcamento.data
                 datamaxima = date.fromordinal(data.toordinal()+15)
                 print(datamaxima)
-            if datamaxima>date.today():
+                print(date.today())
+            if date.today()>datamaxima:
+
                 flash("Orçamento "+str(codigoOrcamento)+" Está com mais de 15 dias após gerado")
                 return render_template("Pedido.html")
 
@@ -490,18 +497,5 @@ def CadastrarPedido():
         except:
             flash("Falha ao gerar pedido tente novamente")
             return render_template("Pedido.html")
-
-    return render_template("Pedido.html")
-
-@app.route("/Categoria/Atualizar/", methods=["GET","POST"])
-def Atualizar_Categoria():
-
-    return render_template("Pedido.html")
-@app.route("/Categoria/", methods=["GET","POST"])
-def ListaCategorias():
-
-    return render_template("Pedido.html")
-@app.route("/Categoria/cadastrar/", methods=["GET","POST"])
-def Cadastrar_Categoria():
 
     return render_template("Pedido.html")

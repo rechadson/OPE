@@ -1,26 +1,27 @@
 from app import db
 from datetime import datetime
 import sqlite3
+import locale
 
+locale.setlocale(locale.LC_ALL,'')
 class Produtos(db.Model):
     __tablename__ = "Produtos"
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(80), nullable=False)
     preco = db.Column(db.Float(120), nullable=False)
-    categoria_id = db.Column(db.Integer,db.ForeignKey('CategoriaProduto.id'))
-    categoria = db.relationship('CategoriaProduto',foreign_keys=categoria_id)
+    metragem = db.Column(db.Boolean())
     fornecedor_cnpj = db.Column(db.String,db.ForeignKey('Fornecedor.cnpj'))
     fornecedor = db.relationship('Fornecedor',foreign_keys=fornecedor_cnpj)
-    def __init__(self,nome,preco,categoria_id,fornecedor_cnpj):
+    def __init__(self,nome,preco,metragem,fornecedor_cnpj):
         self.nome = nome
         self.preco = preco
-        self.categoria_id = categoria_id
+        self.metragem = metragem
         self.fornecedor_cnpj = fornecedor_cnpj
         
-    def insertProduto(nome,preco,categoria_id,fornecedor_cnpj):
+    def insertProduto(nome,preco,metragem,fornecedor_cnpj):
         fornecedor = Fornecedor.query.filter_by(cnpj = fornecedor_cnpj).first()
         if fornecedor:
-            inserir = Produtos(nome,preco,categoria_id,fornecedor_cnpj)
+            inserir = Produtos(nome,preco,metragem,fornecedor_cnpj)
             db.session.add(inserir)
             db.session.commit()
             return True
@@ -30,22 +31,22 @@ class Produtos(db.Model):
        
         return produto
     
-    def setProduto(id,nome,preco,categoria_id,fornecedor_cnpj):
+    def setProduto(id,nome,preco,metragem,fornecedor_cnpj):
         produto = Produtos.query.filter_by(id = id).first()
         print(produto)
         produto.nome = nome
         produto.preco = preco
         produto.fornecedor_cnpj = fornecedor_cnpj
-        produto.categoria_id = categoria_id
+        produto.metragem = metragem
         db.session.commit()
     def getProdutoByFornecedor(fornecedor_cnpj):
         produto = Produtos.query.filter_by(fornecedor_cnpj = fornecedor_cnpj).all()
         return produto
     def getProduto(nome):
-        produto = Produtos.query.filter_by(nome = nome).all()
+        produto = Produtos.query.filter_by(nome = nome).all() 
         return produto
     def getProdutoID(id):
-        produto = Produtos.query.filter_by(id = id).all()
+        produto = Produtos.query.filter_by(id = id).first()
         return produto
 
 class Cliente(db.Model):
@@ -80,11 +81,14 @@ class Cliente(db.Model):
         print(cliente)
         return cliente
 
-    def setCliente(nome,CPF,telefone,Endereco,Cidade,Estado,Complemento):
+    def setCliente(nome,CPF,telefone,Endereco,Cidade,Estado,Complemento,CEP):
         cliente = Cliente.query.filter_by(CPF = CPF).first()
         cliente.nome = nome
         cliente.telefone = telefone
-        cliente.endereco = endereco
+        cliente.Cidade = Cidade
+        cliente.Estado = Estado
+        cliente.Complemento = Complemento
+        cliente.CEP = CEP
         db.session.commit()
 
     def getCliente(CPF):
@@ -203,7 +207,7 @@ class Fornecedor(db.Model):
         fornecedor = Fornecedor.query.all()
         return fornecedor
     def getFornecedor(cnpj):
-        fornecedor = Fornecedor.query.filter_by(cnpj = cnpj).all()
+        fornecedor = Fornecedor.query.filter_by(cnpj = cnpj).first()
         return fornecedor
     def getFornecedorByNome(nome):
         fornecedor = Fornecedor.query.filter_by(nome = nome).all()
@@ -240,35 +244,3 @@ class Usuario(db.Model):
         senha = Usuario.query.filter_by(Senha = Senha).first()
         
         return senha
-
-class CategoriaProduto(db.Model):
-    __tablename__ = "CategoriaProduto"
-    id = db.Column(db.Integer, primary_key=True)
-    Categoria = db.Column(db.String(20),unique=True, nullable=False)
-    CalcularMetragem = db.Column(db.Boolean())
-
-    def __init__(self,Categoria,CalcularMetragem):
-        self.Categoria = Categoria
-        self.CalcularMetragem = CalcularMetragem
-        
-    def getCategoriaByname(Categoria):
-        categoria = CategoriaProduto.query.filter_by(Categoria = Categoria).first()
-        
-        return categoria
-    def getCategoriaByID(id):
-        print("procurando categoria")
-        categoria = CategoriaProduto.query.filter_by(id = id).first()
-       
-        return categoria
-    def getCategoria():
-        categoria = CategoriaProduto.query.all()
-        
-        return categoria
-    def insertCategoria(Categoria,CalcularMetragem):
-        print("tentando")
-        inserir = CategoriaProduto(Categoria,CalcularMetragem)
-        print(inserir)
-        db.session.add(inserir)
-        db.session.commit()
-
-    

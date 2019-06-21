@@ -11,21 +11,21 @@
     {% endwith %}  
     <div class="form-group">
         {{ ProdutoForm.csrf_token }} 
-        <label class="mr-sm-2 sr-only" for="categoria">Categoria do produto</label>
-        <select class="custom-select mr-sm-2" id="categoria" name="categoria">
-          
-            {% for categoria in categorias %}
-            <option>{{ categoria.Categoria }}</option>
-            {% endfor %}
-          </select>
         <label for="nome">Nome</label>
         {{ ProdutoForm.nome(id="nome",class="form-control", placeholder="Nome do Produto")}}
     </div>
     <div class="form-group">
         <label for="preco">Preço do Produto</label>
-        {{ ProdutoForm.preco(class="form-control dinheiro ", id="preco", placeholder="Nome Produto") }}
+        {{ ProdutoForm.preco(class="form-control dinheiro ", id="preco") }}
         </div>
-
+    <div class="custom-control custom-radio my-2">
+        <input id="Calcular" name="metragem" type="radio" class="custom-control-input" value="1" checked>
+        <label class="custom-control-label" for="Calcular">Calcular por metro</label>
+    </div>
+    <div class="custom-control custom-radio">    
+        <input id="NaoCalcular" name="metragem" type="radio" class="custom-control-input" value="0">
+        <label class="custom-control-label" for="NaoCalcular">Não calcular por metro</label>
+    </div>
     <div class="form-group">
         <label for="fornecedor">Fornecedor</label>
         <select class="custom-select mr-sm-2" id="fornecedor" name="fornecedor">
@@ -53,25 +53,30 @@
   {% if pesquisa %} 
     {%for fon in produtos%}
     <form  method = "POST">
-        <label class="mr-sm-2 sr-only" for="categoria">Categoria do produto</label>
-        <input type="fornecedor" class="form-control" id="categoria" name="categoria" value="{{fon[0].categoria.Categoria}}"readonly="readonly">
     <div class="form-group">
       <label for="nome">Nome:</label>
-      <input type="text" class="form-control" id="nome" name="nome"value="{{fon[0].nome}}">
+      <input type="text" class="form-control" id="nome" name="nome"value="{{fon[0][1]}}">
       
     </div>
     <div class="form-group">
       <label for="preco">Preço do Produto:</label>
-      <input type="text" class="dinheiro form-control" id="preco" name="preco"value="{{fon[0].preco}}">
-      
+      <input type="text" class="dinheiro form-control" id="preco" name="preco"value="{{fon[1]}}">
+    </div>
+    <div class="custom-control custom-radio my-2">
+        <input id="Calcular" name="metragem" type="radio" class="custom-control-input" value="1" checked>
+        <label class="custom-control-label" for="Calcular">Calcular por metro</label>
+    </div>
+    <div class="custom-control custom-radio">    
+        <input id="NaoCalcular" name="metragem" type="radio" class="custom-control-input" value="0">
+        <label class="custom-control-label" for="NaoCalcular">Não calcular por metro</label>
+    </div>
+    <div class="form-group my-2">
+      <label for="fornecedor">Fornecedor</label>
+      <input type="fornecedor"  class="form-control" id="cnpj" name="fornecedor" value="{{fon[2]}}"readonly="readonly">
     </div>
     <div class="form-group">
-      <label for="fornecedor">fornecedor</label>
-      <input type="fornecedor" class="form-control" id="cnpj" name="fornecedor" value="{{fon[0].fornecedor.nome}}"readonly="readonly">
-    </div>
-    <div class="form-group">
-    <button type="submit" class="btn btn-primary" formaction="/produto/deletar/{{fon[0].id}}" style={% if pesquisa %} "display:Line"{%else%}"display:none"{%endif%}>Deletar Produto</button>  
-    <button type="submit" class="btn btn-primary" formaction="/produto/atualizar/{{fon[0].id}}" style={% if pesquisa %} "display:Line"{%else%}"display:none"{%endif%}>Atualizar Produto</button>         
+    <button type="submit" class="btn btn-primary" formaction="/produto/deletar/{{fon[0][0]}}" style={% if pesquisa %} "display:Line"{%else%}"display:none"{%endif%}>Deletar Produto</button>  
+    <button type="submit" class="btn btn-primary" formaction="/produto/atualizar/{{fon[0][0]}}" style={% if pesquisa %} "display:Line"{%else%}"display:none"{%endif%}>Atualizar Produto</button>         
     </div>
   </form>
     {%endfor%}

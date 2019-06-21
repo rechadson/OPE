@@ -27,9 +27,9 @@
         {%for carrinho in cart%}
          <li class="list-group-item d-flex justify-content-between lh-condensed">
           <div>
-            <h5 class="my-1">{{carrinho[0].nome}}</h5>
+            <h5 class="my-1">{{carrinho.nome}}</h5>
             <h6 class="my-0">Código do produto</h6>
-            <small class="text-muted">{{carrinho[0].id}}</small>
+            <small class="text-muted">{{carrinho.id}}</small>
           </div>
           
         </li>
@@ -37,7 +37,7 @@
         
         <li class="list-group-item">
           <span>Total do Orçamento </span>
-          <input type="text"  name="dinheiro" class="form-control" value = "{{orcamento}}" readonly="readonly">
+          <input type="text"  name="dinheiro" class="form-control" value = "{{precoOrcamento}}" readonly="readonly">
         </li>
         <li class="list-group-item">
             <span>Total R$ </span>

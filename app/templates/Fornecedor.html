@@ -30,29 +30,28 @@
   
   {%else%}
   <form  method = "POST">
-  {{ FornecedorForm.csrf_token }} 
-  {% if pesquisa %} 
-    {%for fon in fornecedores%}
-    {% with messages = get_flashed_messages() %}
+  {% with messages = get_flashed_messages() %}
     {% if messages %}
       {% for message in messages %}
         <p class="alert alert-danger">{{ message }}</p>
       {% endfor %}
     {% endif %}
     {% endwith %} 
+  {{ FornecedorForm.csrf_token }} 
+  {% if pesquisa %} 
     <div class="form-group">
       <label for="cnpj">CNPJ:</label>
-      <input type="text" class="form-control" id="cnpj" name="cnpj" value="{{fon.cnpj}}" readonly="readonly">
+      <input type="text" class="form-control" id="cnpj" name="cnpj" value="{{fornecedores.cnpj}}" readonly="readonly">
       
     </div>
     <div class="form-group">
       <label for="fornecedor">Nome do fornecedor:</label>
-      <input type="text" class="form-control" id="fornecedor" name="fornecedor"value="{{fon.nome}}">
+      <input type="text" class="form-control" id="fornecedor" name="fornecedor"value="{{fornecedores.nome}}">
       
     </div>
     <div class="form-group">
       <label for="email">Email</label>
-      <input type="email" class="form-control" id="email" name="email" value="{{fon.email}}">
+      <input type="email" class="form-control" id="email" name="email" value="{{fornecedores.email}}">
     </div>
     
     
@@ -60,7 +59,6 @@
     <button type="submit" class="btn btn-primary" formaction="/fornecedor/deletar/" style={% if pesquisa %} "display:Line"{%else%}"display:none"{%endif%}>Excluir Fornecedor</button>
     <button type="submit" class="btn btn-primary" formaction="/fornecedor/atualizar/" style={% if pesquisa %} "display:Line"{%else%}"display:none"{%endif%}>Atualizar Fornecedor</button>         
     </div>
-    {%endfor%}
     {%else%}
     {% with messages = get_flashed_messages() %}
     {% if messages %}
