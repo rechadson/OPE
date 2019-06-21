@@ -18,21 +18,22 @@
     {% endblock %}
     </head>
   <body>
-    <div class="view bg-gradient-info" >
-          
-<div class="jumbotron text-center">
-    <h1>RMSJ Vidros</h1>
-</div>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
   <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-12 order-md-2 mb-4">
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="../../orcamento/">Orçamento</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
+    <a class="navbar-brand" href="#">
+          <img src="http://placehold.it/150x50?text=Logo" alt="">
+        </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="navbar-nav ml-auto">
+      <li class="nav-item active">
+          <a class="nav-link" href="../../orcamento/">Orçamento
+                <span class="sr-only">(current)</span>
+              </a>
+        </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="reue" aria-expanded="false">
               Cliente
@@ -74,20 +75,18 @@
           </li>
       </ul>
     </div>
-  </nav>
-  <hr class="mb-4">
   </div>
-  </div>
-  </div>
+</nav>
+
   <div class="container">
       <div class="row justify-content-center">
-          <div class="col-md-12 order-md-2 mb-4 ">
+          <div class="col-md-12">
     {% block content %}
     {% endblock %}
 
            </div>
-           </div>
-           </div>
+        </div>
+   </div>
 </div>
   </body>
 </html>
