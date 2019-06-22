@@ -64,7 +64,7 @@ success: function(response) {
 		n = resultado;
 		c = isNaN(c = Math.abs(c)) ? 2 : c, d = d == undefined ? "," : d, t = t == undefined ? "." : t, s = n < 0 ? "-" : "", i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", j = (j = i.length) > 3 ? j % 3 : 0;
     	moeda = s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
-
+		$('#total').maskMoney();
 		$('#total').text(moeda);
 		
 		
@@ -83,7 +83,11 @@ error: function(error) {
 			var carrinhoAtual = $(this);
 			var valorItem = carrinhoAtual.find('.dinheiro');
 			var resultado = 0;
-
+			var moeda;
+			var c;
+			var n;
+			var d;
+			var t;
 			valorItem.each(function(){
 				var arredondar;
 				var tdAtual = $(this).text().replace('R$','');
@@ -93,9 +97,11 @@ error: function(error) {
 				arredondar= Math.round(resultado * 100);
 				resultado = Math.ceil(arredondar)/100;
 			});
-			$('#total').mask('###.###.##0,00',{reverse: true});
-			$('#total').text(resultado);
-
+			n = resultado;
+			c = isNaN(c = Math.abs(c)) ? 2 : c, d = d == undefined ? "," : d, t = t == undefined ? "." : t, s = n < 0 ? "-" : "", i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", j = (j = i.length) > 3 ? j % 3 : 0;
+			moeda = s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+			$('#total').maskMoney();
+			$('#total').text(moeda);
 		});
 		return false;
 	});

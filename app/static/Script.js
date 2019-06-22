@@ -1,7 +1,10 @@
 
 $(function()
 {      
-        $('.dinheiro').mask('###.###.##0,00',{reverse: true});
+    $(document).ready(function(){
+        $('.dinheiro').maskMoney();
+     });    
+   
     
     $( "#cnpj" ).focus(function() {
         $("#cnpj").mask("99.999.999/9999-99");

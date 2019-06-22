@@ -381,16 +381,82 @@ def Cadastrar_Orcamento():
             return jsonify({"Resultado":"Error"}) 
     return jsonify({"Resultado":"Error"}) 
 
-@app.route("/Relatorio/Orcamento/")
-def RelatorioOrcamento():
-    
+@app.route("/relatorio/<lista>",methods=["GET","POST"])
+@app.route("/relatorio/",methods=["GET","POST"],defaults={"lista":None})
+def relatorio(lista):
+    print("entrou no relatorio")
+    with sqlite3.connect('storage.db') as conn:
+        try:
+            cur = conn.cursor()
+            if request.method == 'POST':
+                if request.form['acao']=="pesquisar":
+                    print("tipo de ralatorio")
+                    tipo = str(request.form['tipoRelatorio'])
+                    return jsonify({"Tipo":tipo})
+                tipo = request.form['tipo']
+                datainicial= request.form['DataInicial']
+                datafinal = request.form['DataFinal']
+                print(datafinal)
+                print(datainicial)
+                if tipo == "Pedido":
+                    CPF = request.form['cpf'].strip(" ")
+                    print(CPF)
+                    if CPF == "":
+                        itens = []
+                        print("sem cpf")
+                        cur.execute('SELECT * FROM Pedido where data >=? and data <= ?',(datainicial,datafinal, ))
+                        relatorio=cur.fetchall()
+                        for linha in relatorio: 
+                            precomoeda = str(locale.currency(linha[4], grouping=True)).replace("R$","").strip(" ")
+                            orcamento = tables.Orcamento.getOrcamento(linha[1])
+                            for linhaentrega in orcamento:
+                                entrega = int(linhaentrega.prazoEntrega)
+                            datafim = linha[3].replace("-","/")
+                            datafim = datetime.strptime(datafim, '%Y/%m/%d').date()
+                            datafim =date.fromordinal(datafim.toordinal()+entrega)
+                            datafim = datafim.strftime("%d/%m/%Y")
+                            data = linha[3].replace("-","/")
+                            print(data)
+                            data = datetime.strptime(data, '%Y/%m/%d').date()
+                            print(data)
+                            data = data.strftime("%d/%m/%Y")
+                            print("data sem cpf")
+                            print(data)
+                            itens.append([linha,datafim,data,precomoeda])
+                        print(itens)
+                        conn.commit()
+                        print(itens)
+                    else:
+                        itens = []
+                        cur.execute('SELECT * FROM Pedido where cliente_cpf = ? and data >=? and data <= ?',(CPF,datainicial,datafinal, ))
+                        relatorio=cur.fetchall()
+                        for linha in relatorio: 
+                            precomoeda = str(locale.currency(linha[4], grouping=True)).replace("R$","").strip(" ")
+                            orcamento = tables.Orcamento.getOrcamento(linha[1])
+                            for linhaentrega in orcamento:
+                                entrega = int(linhaentrega.prazoEntrega)
+                            datafim = linha[3].replace("-","/")
+                            datafim = datetime.strptime(datafim, '%Y/%m/%d').date()
+                            datafim =date.fromordinal(datafim.toordinal()+entrega)
+                            datafim = datafim.strftime("%d/%m/%Y")
+                            data = linha[3].replace("-","/")
+                            print(data)
+                            data = datetime.strptime(data, '%Y/%m/%d').date()
+                            print(data)
+                            data = data.strftime("%d/%m/%Y")
+                            print("data foi")
+                            print(data)
+                            itens.append([linha,datafim,data,precomoeda])
+                        conn.commit()
+                    return render_template("RelatorioPedidos.html", pedidos = itens)
+                if tipo == "Orçamento":
+                    produto = request.form['produto']
+                    return render_template("RelatorioOrcamento.html", orcament = tables.Orcamento.getAllorcamento())
+        except:
+            flash("Erro ao gerar relatório")
+            return redirect(url_for('RelatorioPesquisar'))
+    print("não veio post")
     return render_template("RelatorioOrcamento.html", orcament = tables.Orcamento.getAllorcamento())
-
-@app.route("/Relatorio/Pedidos/")
-def RelatorioPedidos():
-   
-    return render_template("RelatorioPedidos.html")
-
 @app.route("/Relatorio/Pesquisar/")
 def RelatorioPesquisar():
    

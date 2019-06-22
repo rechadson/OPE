@@ -1,30 +1,23 @@
 {% extends "baseNavbar.html" %}
+{% block head %}
+<script src="{{ url_for('static', filename = 'scriptRelatorio.js') }}" type="text/javascript"></script>
+{% endblock %}
 {% block content %}
-
-<div class="container">   
-       <form>
-          <div class="form-group col-md-3">
-            <label for="Data">Data Inicial</label>
-            <input type="date" class="form-control" id="Data" placeholder="Digite a Data" autofocus>
-          </div>
-          <div class="form-group col-md-3">
-            <label for="Data">Data Final</label>
-            <input type="date" class="form-control" id="Data" placeholder="Digite a Data" autofocus>
-          </div>
-        <div class="form-group col-md-6">
-            <label for="Nome">Nome Do Cliente</label>
-            <input type="text" class="form-control" id="Nome" placeholder="Escolha Ou Digite o Cliente...">
-        </div>
-        <div class="form-group col-md-6">
-            <label for="Nome">Nome Do Produto</label>
-            <input type="text" class="form-control" id="Nome" placeholder="Escolha Ou Digite o Produto...">
-        </div>
-        
-        <button type="submit" class="btn btn-primary">Pesquisar</button>
-              
-      </form>
-
-
+<div class="my-5 px-0">
+  <form id="formtiporelatorio">
+    <div class="col-3">
+    <label  for="tipoRelatorio">Escolha um tipo de relatório</label>
+    <select class="custom-select mr-sm-2" id="tipoRelatorio" name="tipoRelatorio">
+    <option selected>Escolher...</option>
+    <option>Orçamento</option>
+    <option>Pedido</option>
+    </select>
+    <input type="text" class="form-control invisible" id="Nome" name="acao"value="pesquisar">
+    </div>
+  </form>
+<div class="my-4 mx-0" id="Relatorio">
+</div>
+</div>
 
 
 {% endblock %}
