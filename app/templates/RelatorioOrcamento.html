@@ -10,16 +10,20 @@
 <table class="table table-bordered table-hover">
     <thead>
         <tr class="bg-danger">
-            <td><b>CPF do Cliente</b></td>
+            <td><b>Codigo</b></td>
             <td><b>Data</b></td>
+            <td><b>Data de validade</b></td>
+            <td><b>Quantidade de dias úteis</b></td>
             <td><b>Total</b></td>
         </tr>
     </thead>
-    {% for orcamentos in orcament %}
+    {% for orcamento in orcamentos %}
     <tr>
-        <td>{{ orcamentos.cliente_cpf }}</td>
-        <td>{{ orcamentos.data }}</td>
-        <td>{{ orcamentos.preco }}</td>
+        <td>{{ orcamento[0][0]}}</td>
+        <td>{{ orcamento[2]}}</td>
+        <td>{{ orcamento[1]}}</td>
+        <td>{{ orcamento[0][3]}}</td>
+        <td>{{ orcamento[3]}}</td>
 
     </tr>
     {% endfor %}

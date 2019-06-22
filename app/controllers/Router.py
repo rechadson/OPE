@@ -450,13 +450,33 @@ def relatorio(lista):
                         conn.commit()
                     return render_template("RelatorioPedidos.html", pedidos = itens)
                 if tipo == "Orçamento":
-                    produto = request.form['produto']
-                    return render_template("RelatorioOrcamento.html", orcament = tables.Orcamento.getAllorcamento())
+                    itens = []
+                    print("sem cpf")
+                    cur.execute('SELECT * FROM Orcamento where data >=? and data <= ?',(datainicial,datafinal, ))
+                    relatorio=cur.fetchall()
+                    for linha in relatorio: 
+                        precomoeda = str(locale.currency(linha[1], grouping=True)).replace("R$","").strip(" ")
+                        datafim = linha[2].replace("-","/")
+                        datafim = datetime.strptime(datafim, '%Y/%m/%d').date()
+                        datafim =date.fromordinal(datafim.toordinal()+15)
+                        datafim = datafim.strftime("%d/%m/%Y")
+                        data = linha[2].replace("-","/")
+                        print(data)
+                        data = datetime.strptime(data, '%Y/%m/%d').date()
+                        print(data)
+                        data = data.strftime("%d/%m/%Y")
+                        print("data sem cpf")
+                        print(data)
+                        itens.append([linha,datafim,data,precomoeda])
+                        print(itens)
+                        conn.commit()
+                        print(itens)
+
+                    return render_template("RelatorioOrcamento.html", orcamentos = itens)
         except:
             flash("Erro ao gerar relatório")
             return redirect(url_for('RelatorioPesquisar'))
-    print("não veio post")
-    return render_template("RelatorioOrcamento.html", orcament = tables.Orcamento.getAllorcamento())
+    
 @app.route("/Relatorio/Pesquisar/")
 def RelatorioPesquisar():
    
