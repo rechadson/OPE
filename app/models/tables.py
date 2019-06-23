@@ -104,11 +104,13 @@ class Orcamento(db.Model):
     preco = db.Column(db.Float(120), nullable=False)
     data = db.Column(db.Date)
     prazoEntrega = db.Column(db.Integer)
+    Status = db.Column(db.String(80), nullable=False)
 
-    def __init__(self,preco,data,prazoEntrega):
+    def __init__(self,preco,data,prazoEntrega,Status):
         self.preco = preco
         self.data = data
         self.prazoEntrega = prazoEntrega
+        self.Status = Status
     def getAllorcamento():
         orcamento = Orcamento.query.all()
         return orcamento
@@ -119,8 +121,8 @@ class Orcamento(db.Model):
     def getUltimoOrcamento():
         orcamento = Orcamento.query.all()
         return orcamento[-1].id
-    def insertOrcamento(preco,data,prazoEntrega):
-        inserir = Orcamento(preco,data,prazoEntrega)
+    def insertOrcamento(preco,data,prazoEntrega,Status):
+        inserir = Orcamento(preco,data,prazoEntrega,Status)
         print("inserindo orçamento")
         print(inserir)
         db.session.add(inserir)
@@ -128,6 +130,10 @@ class Orcamento(db.Model):
         print("codigo sendo gerado")
         codigogerado = Orcamento.getUltimoOrcamento()
         return codigogerado
+    def setStatusOrcamento(id,Status):
+        orcamento = Orcamento.query.filter_by(id = id).first()
+        orcamento.Status = Status
+        db.session.commit()
 
 class Orcamento_Produto(db.Model):
     __tablename__ = "Orcamento_Produto"

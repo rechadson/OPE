@@ -304,6 +304,13 @@ def Pesquisar_cliente():
             else:
                 flash('Cliente não encontrado')
                 return redirect(url_for('Pesquisar_cliente'))
+        if request.method == 'POST':
+            formCpf= str(request.form['cpf'])
+            client=tables.Cliente.getCliente(formCpf)
+            if client:
+                for cliente in client:    
+                    return jsonify({"CPF":cliente.CPF,"nome":cliente.nome,"telefone":cliente.telefone,"Endereco":cliente.Endereco,"Cidade":cliente.Cidade,"Estado":cliente.Estado,"Complemento":cliente.Complemento,"CEP":cliente.CEP})
+            return jsonify({"CPF":"Não cadastrado"})
     except:
         return render_template('cliente.html',ClienteForm=form,cadastrar=False,clientes=tables.Cliente.getAllCliente())
     return render_template('cliente.html',ClienteForm=form,cadastrar=False,clientes=tables.Cliente.getAllCliente())
@@ -357,13 +364,15 @@ def atualizar_produto(id):
 def Cadastrar_Orcamento():
     if request.method == 'POST':
         dados = request.get_json()
-        total = float(dados["Total"].replace(",","."))
+        total = dados["Total"].replace(".","")
+        total = float(total.replace(",","."))
         data = date.today()
         dataEntrega = int(dados["DiasEntrega"])
+        Status = "Aguardando"
         print(dataEntrega)
         #data=data.strftime("%d/%m/%y")
         try:
-            codigoGerado = tables.Orcamento.insertOrcamento(total,data,dataEntrega)
+            codigoGerado = tables.Orcamento.insertOrcamento(total,data,dataEntrega,Status)
             print("aqui foi")
             print(codigoGerado)
             if(codigoGerado!=""):
@@ -451,7 +460,6 @@ def relatorio(lista):
                     return render_template("RelatorioPedidos.html", pedidos = itens)
                 if tipo == "Orçamento":
                     itens = []
-                    print("sem cpf")
                     cur.execute('SELECT * FROM Orcamento where data >=? and data <= ?',(datainicial,datafinal, ))
                     relatorio=cur.fetchall()
                     for linha in relatorio: 
@@ -461,17 +469,10 @@ def relatorio(lista):
                         datafim =date.fromordinal(datafim.toordinal()+15)
                         datafim = datafim.strftime("%d/%m/%Y")
                         data = linha[2].replace("-","/")
-                        print(data)
                         data = datetime.strptime(data, '%Y/%m/%d').date()
-                        print(data)
                         data = data.strftime("%d/%m/%Y")
-                        print("data sem cpf")
-                        print(data)
                         itens.append([linha,datafim,data,precomoeda])
-                        print(itens)
                         conn.commit()
-                        print(itens)
-
                     return render_template("RelatorioOrcamento.html", orcamentos = itens)
         except:
             flash("Erro ao gerar relatório")
@@ -518,21 +519,24 @@ def imprimirOrcamento(codigoOrcamento):
 
 def Pedido(codigoOrcamento):
    
-    orcamento = tables.Orcamento.getOrcamento(codigoOrcamento)
-    for precoOrcamento in orcamento:
-        precoatual = locale.currency(precoOrcamento.preco, grouping=True)
-        preco = locale.currency(precoOrcamento.preco, grouping=True).replace("R$","").strip(" ")
-        print(preco)
-    if codigoOrcamento:
-        if orcamento:
-            produtos = []
-            codProduto = tables.Orcamento_Produto.getOrcamentoProduto(codigoOrcamento)
-            for cod in codProduto:
-                produtos.append(tables.Produtos.getProdutoID(cod.Produto_id))
-            print(produtos)
-            return render_template("Pedido.html",cart=produtos,precoOrcamento=precoatual,orcamento=preco,codigoOrcamento=codigoOrcamento,codigo=True)
-        return redirect(url_for('Orcamento'))
-    return render_template("Pedido.html")   
+    try:
+        orcamento = tables.Orcamento.getOrcamento(codigoOrcamento)
+        for precoOrcamento in orcamento:
+            precoatual = locale.currency(precoOrcamento.preco, grouping=True)
+            preco = locale.currency(precoOrcamento.preco, grouping=True).replace("R$","").strip(" ")
+            print(preco)
+        if codigoOrcamento:
+            if orcamento:
+                produtos = []
+                codProduto = tables.Orcamento_Produto.getOrcamentoProduto(codigoOrcamento)
+                for cod in codProduto:
+                    produtos.append(tables.Produtos.getProdutoID(cod.Produto_id))
+                print(produtos)
+                return render_template("Pedido.html",cart=produtos,precoOrcamento=precoatual,orcamento=preco,codigoOrcamento=codigoOrcamento,codigo=True)
+            return redirect(url_for('Orcamento'))
+        return render_template("Pedido.html")   
+    except:
+        return render_template("Pedido.html")
 
 @app.route("/Pedido/cadastrar/", methods=["GET","POST"])
 def CadastrarPedido():
@@ -560,6 +564,7 @@ def CadastrarPedido():
                 print("cliente vazio")
                 tables.Cliente.insertCliente(formNome,cpf,telefone,endereco,cidade,estado,complemento,cep)
             orcamento = tables.Orcamento.getOrcamento(codigoOrcamento)
+            Status="Aprovado"
             for dataorcamento in orcamento:
                 data = dataorcamento.data
                 datamaxima = date.fromordinal(data.toordinal()+15)
@@ -579,6 +584,7 @@ def CadastrarPedido():
             print()
             tables.Pedido.cadastrarPedido(codigoOrcamento,cpf,data,valor)
             flash("Pedido realizado com Sucesso")
+            orcamento = tables.Orcamento.setStatusOrcamento(codigoOrcamento,Status)
             return render_template("Pedido.html")
         except:
             flash("Falha ao gerar pedido tente novamente")

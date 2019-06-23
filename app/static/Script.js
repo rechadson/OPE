@@ -2,7 +2,7 @@
 $(function()
 {      
     $(document).ready(function(){
-        $('.dinheiro').maskMoney();
+        $('.dinheiro').maskMoney({decimal:",", thousands:"."});
      });    
    
     

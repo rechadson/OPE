@@ -1,6 +1,4 @@
 $(function () {
-	$('.dinheiro').mask('###.###.##0,00',{reverse: true});
-	$('#total').mask('###.###.##0,00',{reverse: true});
 	var scntDiv = $('.produto');
 	var carrinhos = $('.container');
 	

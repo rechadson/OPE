@@ -13,7 +13,8 @@
             <td><b>Codigo</b></td>
             <td><b>Data</b></td>
             <td><b>Data de validade</b></td>
-            <td><b>Quantidade de dias úteis</b></td>
+            <td><b>dias úteis</b></td>
+            <td><b>Status</b></td>
             <td><b>Total</b></td>
         </tr>
     </thead>
@@ -23,8 +24,8 @@
         <td>{{ orcamento[2]}}</td>
         <td>{{ orcamento[1]}}</td>
         <td>{{ orcamento[0][3]}}</td>
+        <td>{{ orcamento[0][4]}}</td>
         <td>{{ orcamento[3]}}</td>
-
     </tr>
     {% endfor %}
 
