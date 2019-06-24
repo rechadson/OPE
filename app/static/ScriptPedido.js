@@ -29,7 +29,6 @@ $(function () {
                 $("#CEP").attr("readonly","readonly")             
         }
         else{
-            $("#cpf").val("")
             $("#Nome").val("")
             $("#Telefone").val("")
             $("#Endereco").val("")

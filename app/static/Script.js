@@ -14,11 +14,11 @@ $(function()
     $('#cnpj').blur(function()
     { 
             cnpj = $('#cnpj').val().replace(/[^0-9]/g, '').toString()
-            
+            console.log(cnpj)
             if(cnpj == ''){ return false;}
                
             if (cnpj.length != 14){
-                console.log(cnpj.length)
+                
                 alert("CNPJ Invalido");
                 document.getElementById("cnpj").setCustomValidity('CNPJ invalido');
                 return false;
@@ -71,7 +71,7 @@ $(function()
                 document.getElementById("cnpj").setCustomValidity('CNPJ invalido');
                 return false;
             }
-                   
+            document.getElementById("cnpj").setCustomValidity('');   
             return true;
             
             
@@ -122,6 +122,6 @@ $(function()
             document.getElementById("cpf").setCustomValidity('CPF invalido');
             return false;
         }     
-        
+        document.getElementById("cpf").setCustomValidity('');
     });
 });

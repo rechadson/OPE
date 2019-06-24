@@ -170,19 +170,21 @@ class Pedido(db.Model):
     cliente = db.relationship('Cliente',foreign_keys=cliente_cpf)
     data = db.Column(db.Date)
     valor = db.Column(db.Float)
+    formaPagamento = db.Column(db.String(80), nullable=False)
 
-    def __init__(self,orcamento_id,cliente_cpf,data,valor):        
+    def __init__(self,orcamento_id,cliente_cpf,data,valor,formaPagamento):        
         self.orcamento_id = orcamento_id
         self.cliente_cpf = cliente_cpf
         self.data = data
         self.valor = valor
+        self.formaPagamento = formaPagamento
     
-    def cadastrarPedido(orcamento_id,cliente_cpf,data,valor):
+    def cadastrarPedido(orcamento_id,cliente_cpf,data,valor,formaPagamento):
         print("inserindo pedido")
         print(orcamento_id)
         print(cliente_cpf)
         print(data)
-        inserir = Pedido(orcamento_id,cliente_cpf,data,valor)
+        inserir = Pedido(orcamento_id,cliente_cpf,data,valor,formaPagamento)
         db.session.add(inserir)
         print("pedido inserido")
         db.session.commit()
@@ -194,6 +196,10 @@ class Pedido(db.Model):
     def getPedidobycliente(cliente_cpf):
         pedido = Pedido.query.filter_by(cliente_cpf = cliente_cpf).first()
         return pedido
+    def getPedido(id):
+        pedido = Pedido.query.filter_by(id = id).first()
+        return pedido
+
     
 
 
@@ -219,9 +225,7 @@ class Fornecedor(db.Model):
         fornecedor = Fornecedor.query.filter_by(nome = nome).all()
         return fornecedor
     def insertFornecedor(nome,email,cnpj):
-        print("tentando")
         inserir = Fornecedor(nome,email,cnpj)
-        print(inserir)
         db.session.add(inserir)
         db.session.commit()
         
@@ -235,7 +239,7 @@ class Usuario(db.Model):
     __tablename__ = "Usuario"
     id = db.Column(db.Integer, primary_key=True)
     User = db.Column(db.String(20),unique=True, nullable=False)
-    Senha = db.Column(db.String(20), unique=True, nullable=False)
+    Senha = db.Column(db.String(20), nullable=False)
 
     def __init__(self,User,Senha):
         self.User = User
@@ -243,10 +247,12 @@ class Usuario(db.Model):
         
     def getUser(User):
         user = Usuario.query.filter_by(User = User).first()
-        
         return user
 
     def getSenha(Senha):
         senha = Usuario.query.filter_by(Senha = Senha).first()
-        
         return senha
+    def inserirUsuario(User,Senha):
+        inserir = Usuario(User,Senha)
+        db.session.add(inserir)
+        db.session.commit()
