@@ -13,6 +13,7 @@ $(function () {
 			console.log(response)
 			if(response.CPF != "Não cadastrado"){
                 $("#Nome").val(response.nome)
+                $("#email").val(response.email)
                 $("#Telefone").val(response.telefone)
                 $("#Endereco").val(response.Endereco)
                 $("#Complemento").val(response.Complemento)
@@ -20,6 +21,7 @@ $(function () {
                 $("#Cidade").val(response.Cidade)
                 $("#CEP").val(response.CEP) 
                 $("#CEP").attr("readonly","readonly")
+                $("#email").attr("readonly","readonly")
                 $("#Nome").attr("readonly","readonly")
                 $("#Telefone").attr("readonly","readonly")
                 $("#Endereco").attr("readonly","readonly")
@@ -29,6 +31,7 @@ $(function () {
                 $("#CEP").attr("readonly","readonly")             
         }
         else{
+            $("#email").val("")
             $("#Nome").val("")
             $("#Telefone").val("")
             $("#Endereco").val("")
@@ -36,6 +39,7 @@ $(function () {
             $("#Estado").val("")
             $("#Cidade").val("") 
             $("#CEP").val("")
+            $("#email").removeAttr("readonly")
             $("#CEP").removeAttr("readonly")
             $("#Nome").removeAttr("readonly")
             $("#Telefone").removeAttr("readonly")

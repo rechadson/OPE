@@ -21,7 +21,10 @@
         <label for="nome">Nome do Cliente</label>
         {{ ClienteForm.nome(class="form-control", id="nome", placeholder="Cliente") }}
         </div>
-
+    <div class="mb-3">
+      <label for="email">Email <span class="text-muted">(Opcional)</span></label>
+      <input type="email" class="form-control" id="email" name="email">
+    </div>
     <div class="form-group">
         <label for="Telefone">Telefone do Cliente</label>
         {{ ClienteForm.telefone(class="form-control", id="Telefone", placeholder="Telefone") }}
@@ -79,13 +82,16 @@
 
     <div class="form-group">
       <label for="cpf">CPF:</label>
-      <input type="text" class="form-control" id="cpf" name="cpf"value="{{fon.CPF}}">
+      <input type="text" class="form-control" id="cpf" name="cpf"value="{{fon.CPF}}" readonly="readonly">
       
     </div>
     <div class="form-group">
       <label for="cliente">Nome do Cliente:</label>
       <input type="text" class="form-control" id="cliente" name="cliente"value="{{fon.nome}}">
-      
+      <div class="mb-3">
+        <label for="email">Email <span class="text-muted">(Opcional)</span></label>
+        <input type="email" class="form-control" id="email" name="email" value="{{fon.email}}" >
+      </div>
     </div>
     <div class="form-group">
       <label for="telefone">Telefone</label>

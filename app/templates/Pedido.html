@@ -136,9 +136,7 @@
           {% endif %}
           {%endfor%}
         
-        <hr class="mb-4">
-        <button class="btn btn-primary btn-lg btn-block col-3" type="submit">Voltar</button>
-      </form>
+        </form>
     </div>
   </div>  
 </form>
@@ -177,11 +175,11 @@
         
         <li class="list-group-item">
           <span>Total do Orçamento </span>
-          <input type="text"  name="dinheiro" class="form-control" value = "{{precoOrcamento}}" readonly="readonly">
+          <input type="text"  name="valorOrcamento" class="form-control" value = "{{precoOrcamento}}" readonly="readonly">
         </li>
         <li class="list-group-item">
             <span>Total R$ </span>
-            <input type="text"  name="dinheiro" class="dinheiro form-control" value = "{{orcamento}}">
+            <input type="text"  name="valor" class="dinheiro form-control" value = "{{orcamento}}">
         </li>
         
         <li class="list-group-item d-flex justify-content-between">

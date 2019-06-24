@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block head %}
+{% endblock %}
+{% block content %}
+<div class="container my-4">
+    <div class="row">
+        <div class="col-sm-4">
+            <h1>Pedido</h1>
+            <h3>Nº {{Pedido}}</h3>
+        </div>
+            <div class="col-sm-8">
+                <div class="row">
+                                <div class="col-sm"><h6 class="text-right">R.M.S.J. GLASS - 30.224.690/0001-23</h6></div>        
+                        </div>
+                        <div class="row">
+                                <div class="col-sm"><h6 class="text-right">Avenida Raimundo Eduardo da Silva, 540 - Jardim Zaira</h6></div>        
+                        </div>
+                        <div class="row">
+                                <div class="col-sm"><h6 class="text-right">Mauá - São Paulo 09321-170</h6></div>        
+                        </div>
+                        <div class="row">
+                                <div class="col-sm"><h6 class="text-right">Rmsjvidros@gmail.com</h6></div>        
+                        </div>
+                        <div class="row">
+                                <div class="col-sm"><h6 class="text-right">(11) 4519-8241 / (11) 99567-6240</h6></div>        
+                </div>                   
+            </div>
+        </div>
+        <hr class="style12">
+    <div class="row">
+        <div class="col-2 col-md-2"><h6 class="text-left">Codigo do Produto</h6></div>
+        <div class="col-sm"><h6 class="text-center">Produto</h6></div>
+    </div>
+    {%for carrinho in cart%}
+    <div class="row">
+            <div class="col-2 col-md-2">{{carrinho.id}}</div>
+            <div class="col-sm"><h6 class="text-center">{{carrinho.nome}}</h6></div>
+    </div>
+    {%endfor%}
+    <hr class="style12">
+    <div class="row">
+            <div class="col-10 col-md-2">Total {{total}} </div>
+            <div class="col-sm"><h6 class="text-right"></h6></div>
+    </div>
+    <hr class="style12">
+    <div class="row">
+        {%for Cliente in Cliente %}
+        
+        <div class="col-sm">
+
+                <div class="row">
+                        <div class="col-sm"><h6 class="text-left">Cliene: {{Cliente.nome}} </h6></div>        
+                </div>
+                <div class="row">
+                        <div class="col-sm"><h6 class="text-left">CPF: {{Cliente.CPF}} </h6></div>        
+                </div>
+                <div class="row">
+                        <div class="col-sm"><h6 class="text-left">Telefone {{Cliente.telefone}}</h6></div>        
+                </div>
+                <div class="row">
+                        <div class="col-sm"><h6 class="text-left">Endereço: {{Cliente.Endereco}} </h6></div>        
+                </div> 
+                <div class="row">
+                        <div class="col-sm"><h6 class="text-left">Complemento {{Cliente.Complemento}} </h6></div>        
+                </div>
+                <div class="row">
+                        <div class="col-sm"><h6 class="text-left">Cidade: {{Cliente.Cidade}} </h6></div>        
+                </div> 
+                <div class="row">
+                        <div class="col-sm"><h6 class="text-left">Estado: {{Cliente.Estado}}  </h6></div>        
+                </div> 
+                <div class="row">
+                        <div class="col-sm"><h6 class="text-left">CEP: {{Cliente.CEP}} </h6></div>        
+                </div>             
+        </div>
+        {%endfor%}
+    
+    </div>
+    <hr class="style12">
+    <div class="row">
+        <div class="col-sm">
+                <div class="row">
+                        <div class="col-sm"><h6 class="text-left">Data do Pedido {{data}}</h6></div>        
+                        </div>
+                        <div class="row">
+                            <div class="col-sm"><h6 class="text-left">Data da entrega {{datafim}}</h6></div>        
+                        </div>            
+        </div>
+   </div>
+    <form class="my-4">
+    <div>
+        <button type="button" onClick="window.print()" class="btn btn-primary btn-sm">Imprimir Pedido</button>
+    </div>
+    <div class="my-3">
+                <a href="../../../pedido/{{Pedido}}" class="btn btn-primary btn-sm" role="button" aria-pressed="true">Voltar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

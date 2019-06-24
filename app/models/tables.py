@@ -53,6 +53,7 @@ class Cliente(db.Model):
     __tablename__ = "Cliente"
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(80), nullable=False)
+    email = db.Column(db.String(80))
     CPF = db.Column(db.String(80),unique=True, nullable=False)
     telefone = db.Column(db.String(80), nullable=False)
     Endereco = db.Column(db.String(80), nullable=False)
@@ -60,8 +61,9 @@ class Cliente(db.Model):
     Estado = db.Column(db.String(80), nullable=False)
     Complemento = db.Column(db.String(80))
     CEP = db.Column(db.String(80))
-    def __init__(self,nome,CPF,telefone,Endereco,Cidade,Estado,Complemento,CEP):
+    def __init__(self,nome,email,CPF,telefone,Endereco,Cidade,Estado,Complemento,CEP):
         self.nome = nome
+        self.email = email
         self.CPF = CPF
         self.telefone = telefone
         self.Endereco = Endereco
@@ -69,9 +71,9 @@ class Cliente(db.Model):
         self.Estado = Estado
         self.Complemento = Complemento
         self.CEP = CEP
-    def insertCliente(nome,CPF,telefone,Endereco,Cidade,Estado,Complemento,CEP):
+    def insertCliente(nome,email,CPF,telefone,Endereco,Cidade,Estado,Complemento,CEP):
         print("aqui foi cliente")
-        inserir = Cliente(nome,CPF,telefone,Endereco,Cidade,Estado,Complemento,CEP)
+        inserir = Cliente(nome,email,CPF,telefone,Endereco,Cidade,Estado,Complemento,CEP)
         db.session.add(inserir)
         print("aqui inserindo cliente")
         db.session.commit()
@@ -81,9 +83,10 @@ class Cliente(db.Model):
         print(cliente)
         return cliente
 
-    def setCliente(nome,CPF,telefone,Endereco,Cidade,Estado,Complemento,CEP):
+    def setCliente(nome,email,CPF,telefone,Endereco,Cidade,Estado,Complemento,CEP):
         cliente = Cliente.query.filter_by(CPF = CPF).first()
         cliente.nome = nome
+        cliente.email = email
         cliente.telefone = telefone
         cliente.Cidade = Cidade
         cliente.Estado = Estado
