@@ -442,6 +442,7 @@ def relatorio(lista):
             try:
                 cur = conn.cursor()
                 if request.method == 'POST':
+                    total = 0
                     if request.form['acao']=="pesquisar":
                         tipo = str(request.form['tipoRelatorio'])
                         return jsonify({"Tipo":tipo})
@@ -456,6 +457,7 @@ def relatorio(lista):
                             relatorio=cur.fetchall()
                             for linha in relatorio: 
                                 precomoeda = str(locale.currency(linha[4], grouping=True)).replace("R$","").strip(" ")
+                                total = total + linha[4]
                                 orcamento = tables.Orcamento.getOrcamento(linha[1])
                                 for linhaentrega in orcamento:
                                     entrega = int(linhaentrega.prazoEntrega)
@@ -474,6 +476,7 @@ def relatorio(lista):
                             relatorio=cur.fetchall()
                             for linha in relatorio: 
                                 precomoeda = str(locale.currency(linha[4], grouping=True)).replace("R$","").strip(" ")
+                                total = total + linha[4]
                                 orcamento = tables.Orcamento.getOrcamento(linha[1])
                                 for linhaentrega in orcamento:
                                     entrega = int(linhaentrega.prazoEntrega)
@@ -486,22 +489,42 @@ def relatorio(lista):
                                 data = data.strftime("%d/%m/%Y")
                                 itens.append([linha,datafim,data,precomoeda])
                             conn.commit()
-                        return render_template("RelatorioPedidos.html", pedidos = itens)
+                        total = locale.currency(linha[4], grouping=True)
+                        return render_template("RelatorioPedidos.html", pedidos = itens,total=total)
                     if tipo == "Orçamento":
                         itens = []
-                        cur.execute('SELECT * FROM Orcamento where data >=? and data <= ?',(datainicial,datafinal, ))
-                        relatorio=cur.fetchall()
-                        for linha in relatorio: 
-                            precomoeda = str(locale.currency(linha[1], grouping=True)).replace("R$","").strip(" ")
-                            datafim = linha[2].replace("-","/")
-                            datafim = datetime.strptime(datafim, '%Y/%m/%d').date()
-                            datafim =date.fromordinal(datafim.toordinal()+15)
-                            datafim = datafim.strftime("%d/%m/%Y")
-                            data = linha[2].replace("-","/")
-                            data = datetime.strptime(data, '%Y/%m/%d').date()
-                            data = data.strftime("%d/%m/%Y")
-                            itens.append([linha,datafim,data,precomoeda])
-                            conn.commit()
+                        status = str(request.form['Status']).strip(" ")
+                        print(status)
+                        if status == "":
+                            cur.execute('SELECT * FROM Orcamento where data >=? and data <= ?',(datainicial,datafinal, ))
+                            relatorio=cur.fetchall()
+                            for linha in relatorio: 
+                                precomoeda = str(locale.currency(linha[1], grouping=True)).replace("R$","").strip(" ")
+                                datafim = linha[2].replace("-","/")
+                                datafim = datetime.strptime(datafim, '%Y/%m/%d').date()
+                                datafim =date.fromordinal(datafim.toordinal()+15)
+                                datafim = datafim.strftime("%d/%m/%Y")
+                                data = linha[2].replace("-","/")
+                                data = datetime.strptime(data, '%Y/%m/%d').date()
+                                data = data.strftime("%d/%m/%Y")
+                                itens.append([linha,datafim,data,precomoeda])
+                                conn.commit()
+                        else:
+                            print(status)
+                            cur.execute('SELECT * FROM Orcamento where data >=? and data <= ? and Status = ?',(datainicial,datafinal,status, ))
+                            relatorio=cur.fetchall()
+                            for linha in relatorio:
+                                print(relatorio)
+                                precomoeda = str(locale.currency(linha[1], grouping=True)).replace("R$","").strip(" ")
+                                datafim = linha[2].replace("-","/")
+                                datafim = datetime.strptime(datafim, '%Y/%m/%d').date()
+                                datafim =date.fromordinal(datafim.toordinal()+15)
+                                datafim = datafim.strftime("%d/%m/%Y")
+                                data = linha[2].replace("-","/")
+                                data = datetime.strptime(data, '%Y/%m/%d').date()
+                                data = data.strftime("%d/%m/%Y")
+                                itens.append([linha,datafim,data,precomoeda])
+                                conn.commit()
                         return render_template("RelatorioOrcamento.html", orcamentos = itens)
             except:
                 flash("Erro ao gerar relatório")
@@ -587,6 +610,28 @@ def listarPedido(codigoPedido):
                     for cod in codProduto:
                         produtos.append(tables.Produtos.getProdutoID(cod.Produto_id))
                     return render_template("Pedido.html",Pedido = Pedido,Cliente=Cliente,cart=produtos,precoOrcamento=precoatual,orcamento=preco,codigoOrcamento=codigoOrcamento,pesquisa=True,codigo=False)
+                return redirect(url_for('Orcamento'))
+            return render_template("Pedido.html")   
+        except:
+            return render_template("Pedido.html")
+    else:
+        return redirect(url_for('login'))
+@app.route("/Orcamento/verificar/<codigoOrcamento>", methods=["GET","POST"])
+def listarOrcamento(codigoOrcamento):
+    if session["Login"] == "valido":
+        try:
+            orcamento = tables.Orcamento.getOrcamento(codigoOrcamento)
+            for precoOrcamento in orcamento:
+                precoatual = locale.currency(precoOrcamento.preco, grouping=True)
+                preco = locale.currency(precoOrcamento.preco, grouping=True).replace("R$","").strip(" ")
+                codigoOrcamento = precoOrcamento.id
+            if Pedido:
+                if orcamento:
+                    produtos = []
+                    codProduto = tables.Orcamento_Produto.getOrcamentoProduto(codigoOrcamento)
+                    for cod in codProduto:
+                        produtos.append(tables.Produtos.getProdutoID(cod.Produto_id))
+                    return render_template("Orcamento.html",Pedido = Pedido,Cliente=Cliente,cart=produtos,precoOrcamento=precoatual,orcamento=preco,codigoOrcamento=codigoOrcamento,pesquisa=True,codigo=False)
                 return redirect(url_for('Orcamento'))
             return render_template("Pedido.html")   
         except:

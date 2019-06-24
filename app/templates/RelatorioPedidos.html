@@ -24,12 +24,16 @@
         <td>{{ pedido[2] }}</td>
         <td>{{ pedido[1] }}</td>
         <td class="dinheiro">{{ pedido[3] }}</td>
-        <td><a href="../../../Pedido/verificar/{{pedido[0][0]}}" class="btn btn-danger btn-lg btn-block" role="button" aria-pressed="true">Abrir</a></td>
+        <td><a href="../../../Pedido/verificar/{{pedido[0][0]}}" class="btn btn-danger btn-lg btn-block btn-sm" role="button" aria-pressed="true">Abrir</a></td>
 
     </tr>
     {% endfor %}
 </table>
-      <a href="#" class="btn btn-danger btn-lg btn-block" role="button" aria-pressed="true">Enviar por Email</a>
-
-{% endblock %}
 </div>
+<div class="row mx-1">
+          <div class="col-md-5 mb-3">
+              <label for="Total">Total do periodo selecionado</label>
+              <input type="text" class="form-control" id="Total" name="Total" value="{{total}}" readonly="readonly"required>
+              
+          </div>
+{% endblock %}

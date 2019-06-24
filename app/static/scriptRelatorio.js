@@ -25,10 +25,6 @@ $('#tipoRelatorio').change(function() {
               '<input type="text" class="form-control" id="cpf"placeholder="Digite o CPF do cliente..." name="cpf">'+
           '</div>'+
           '<div class="form-group col-md-6">'+
-              '<label for="Nome">Nome Do Produto</label>'+
-              '<input type="text" class="form-control" id="Nome" placeholder="Digite o nome do produto..." name="produto">'+
-          '</div>'+
-          '<div class="form-group col-md-6">'+
             '<button class="btn btn-primary" id="gerarRelatorio">Gerar Relatório</button>'+
           '</div>'+
               '<input type="text" class="form-control invisible" id="tipo" name="tipo"value="Pedido">'+
@@ -46,6 +42,14 @@ $('#tipoRelatorio').change(function() {
           '<label for="DataFinal">Data Final</label>'+
           '<input type="date" class="form-control" id="DataFinal" name="DataFinal"placeholder="Digite a Data" autofocus required>'+
         '</div>'+
+        '<div class="form-group col-md-6">'+
+        '<label for="Status">Status</label>'+
+        '<select class="custom-select mr-sm-2" id="Status" name="Status">'+
+          '<option selected></option>'+
+          '<option>Aprovado</option>'+
+          '<option>Aguardando</option>'+
+        '</select>'+
+          '</div>'+
       '<div class="form-group col-md-6">'+
       '<button class="btn btn-primary" id="gerarRelatorio">Gerar Relatório</button>'+
       '</div>'+
